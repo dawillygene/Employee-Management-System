@@ -15,6 +15,7 @@ public class DashboardController {
     @GetMapping({"/", "/dashboard"})
     public String dashboard(Model model) {
         model.addAttribute("pageTitle", "Dashboard");
+        model.addAttribute("pageDescription", "Overview of your organization's performance and key metrics");
         model.addAttribute("activePage", "dashboard");
         
         // Dashboard statistics
