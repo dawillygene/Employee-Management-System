@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom Styles for Better Alignment */
+        
         .sidebar-transition {
             transition: transform 0.3s ease-in-out;
         }
@@ -26,61 +27,62 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
+        
         .sidebar-active {
             background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
             border-right: 3px solid #3B82F6;
             color: #3B82F6;
         }
-
+        
         .sidebar-active .sidebar-icon {
             color: #3B82F6;
         }
-
+        
         .sidebar-active .sidebar-text {
             color: #3B82F6;
             font-weight: 600;
         }
-
+        
         .sidebar-link {
             transition: all 0.2s ease;
         }
-
+        
         .sidebar-link:hover {
             background-color: rgba(249, 250, 251, 1);
             transform: translateX(4px);
         }
-
         /* Ensure proper layout */
+        
         .main-container {
             min-height: 100vh;
             display: flex;
         }
-
+        
         .sidebar-container {
-            width: 16rem; /* 64 * 0.25rem = 16rem */
+            width: 16rem;
+            /* 64 * 0.25rem = 16rem */
             flex-shrink: 0;
         }
-
+        
         .content-container {
             flex: 1;
             min-width: 0;
         }
-
         /* Mobile responsive adjustments */
+        
         @media (max-width: 1023px) {
             .sidebar-container {
                 position: fixed;
                 height: 100vh;
                 z-index: 50;
             }
-            
             .content-container {
                 width: 100%;
             }
         }
     </style>
 </head>
+
 <body class="bg-gray-50 font-sans antialiased">
     <div class="main-container">
         <!-- Sidebar -->
@@ -100,37 +102,27 @@
 
             <!-- Sidebar Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2">
-                <a th:href="@{/dashboard}" 
-                   th:classappend="${activePage == 'dashboard'} ? 'sidebar-active' : ''" 
-                   class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-tachometer-alt sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
 
-                <a th:href="@{/employees}" 
-                   th:classappend="${activePage == 'employees'} ? 'sidebar-active' : ''" 
-                   class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <a th:href="@{/employees}" th:classappend="${activePage == 'employees'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-users sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Employees</span>
                 </a>
 
-                <a th:href="@{/attendance}" 
-                   th:classappend="${activePage == 'attendance'} ? 'sidebar-active' : ''" 
-                   class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <a th:href="@{/attendance}" th:classappend="${activePage == 'attendance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-calendar-check sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Attendance</span>
                 </a>
 
-                <a th:href="@{/performance}" 
-                   th:classappend="${activePage == 'performance'} ? 'sidebar-active' : ''" 
-                   class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <a th:href="@{/performance}" th:classappend="${activePage == 'performance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-star sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Performance</span>
                 </a>
 
-                <a th:href="@{/reports}" 
-                   th:classappend="${activePage == 'reports'} ? 'sidebar-active' : ''" 
-                   class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <a th:href="@{/reports}" th:classappend="${activePage == 'reports'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-chart-bar sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Reports</span>
                 </a>
@@ -140,10 +132,8 @@
                     <div class="px-3 mb-3">
                         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</h3>
                     </div>
-                    
-                    <a th:href="@{/admin/users}" 
-                       th:classappend="${activePage == 'users'} ? 'sidebar-active' : ''" 
-                       class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+
+                    <a th:href="@{/admin/users}" th:classappend="${activePage == 'users'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                         <i class="fas fa-user-cog sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                         <span class="sidebar-text">User Management</span>
                     </a>
@@ -178,13 +168,11 @@
             <!-- Top Navigation Bar -->
             <header class="bg-white shadow-sm border-b border-gray-200 lg:hidden">
                 <div class="flex items-center justify-between h-16 px-4">
-                    <button type="button" 
-                            class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-2"
-                            onclick="toggleSidebar()">
+                    <button type="button" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-2" onclick="toggleSidebar()">
                         <span class="sr-only">Open sidebar</span>
                         <i class="fas fa-bars text-xl"></i>
                     </button>
-                    
+
                     <div class="flex items-center space-x-4">
                         <span class="text-sm text-gray-600" sec:authentication="name">Welcome, User</span>
                         <form th:action="@{/logout}" method="post" class="inline">
@@ -240,7 +228,7 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            
+
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
         }
@@ -250,7 +238,7 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const isMobile = window.innerWidth < 1024;
-            
+
             if (isMobile && !sidebar.contains(event.target) && !event.target.closest('button[onclick="toggleSidebar()"]')) {
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('hidden');
@@ -261,7 +249,7 @@
         window.addEventListener('resize', function() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            
+
             if (window.innerWidth >= 1024) {
                 overlay.classList.add('hidden');
                 sidebar.classList.remove('-translate-x-full');
@@ -271,4 +259,5 @@
         });
     </script>
 </body>
+
 </html>

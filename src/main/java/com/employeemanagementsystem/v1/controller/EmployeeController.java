@@ -39,8 +39,8 @@ public class EmployeeController {
             pageable);
         
         model.addAttribute("pageTitle", "Employee Management");
+        model.addAttribute("pageDescription", "Manage employee information and records");
         model.addAttribute("activePage", "employees");
-        model.addAttribute("content", "employees/list :: content");
         model.addAttribute("employees", employees);
         model.addAttribute("departments", employeeService.getAllDepartments());
         model.addAttribute("positions", employeeService.getAllPositions());
@@ -48,19 +48,19 @@ public class EmployeeController {
         model.addAttribute("selectedDepartment", department);
         model.addAttribute("selectedPosition", position);
         
-        return "layout/base";
+        return "employees/list";
     }
     
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("pageTitle", "Add Employee");
+        model.addAttribute("pageDescription", "Add a new employee to the system");
         model.addAttribute("activePage", "employees");
-        model.addAttribute("content", "employees/form :: content");
         model.addAttribute("employee", new Employee());
         model.addAttribute("departments", employeeService.getAllDepartments());
         model.addAttribute("positions", employeeService.getAllPositions());
         model.addAttribute("isEdit", false);
-        return "layout/base";
+        return "employees/form";
     }
     
     @PostMapping("/add")
@@ -70,12 +70,12 @@ public class EmployeeController {
                              Model model) {
         if (result.hasErrors()) {
             model.addAttribute("pageTitle", "Add Employee");
+            model.addAttribute("pageDescription", "Add a new employee to the system");
             model.addAttribute("activePage", "employees");
-            model.addAttribute("content", "employees/form :: content");
             model.addAttribute("departments", employeeService.getAllDepartments());
             model.addAttribute("positions", employeeService.getAllPositions());
             model.addAttribute("isEdit", false);
-            return "layout/base";
+            return "employees/form";
         }
         
         try {
@@ -85,12 +85,12 @@ public class EmployeeController {
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("pageTitle", "Add Employee");
+            model.addAttribute("pageDescription", "Add a new employee to the system");
             model.addAttribute("activePage", "employees");
-            model.addAttribute("content", "employees/form :: content");
             model.addAttribute("departments", employeeService.getAllDepartments());
             model.addAttribute("positions", employeeService.getAllPositions());
             model.addAttribute("isEdit", false);
-            return "layout/base";
+            return "employees/form";
         }
     }
     
@@ -98,23 +98,23 @@ public class EmployeeController {
     public String viewEmployee(@PathVariable Long id, Model model) {
         Employee employee = employeeService.findById(id);
         model.addAttribute("pageTitle", "Employee Details");
+        model.addAttribute("pageDescription", "View employee information and details");
         model.addAttribute("activePage", "employees");
-        model.addAttribute("content", "employees/view :: content");
         model.addAttribute("employee", employee);
-        return "layout/base";
+        return "employees/view";
     }
     
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         Employee employee = employeeService.findById(id);
         model.addAttribute("pageTitle", "Edit Employee");
+        model.addAttribute("pageDescription", "Update employee information");
         model.addAttribute("activePage", "employees");
-        model.addAttribute("content", "employees/form :: content");
         model.addAttribute("employee", employee);
         model.addAttribute("departments", employeeService.getAllDepartments());
         model.addAttribute("positions", employeeService.getAllPositions());
         model.addAttribute("isEdit", true);
-        return "layout/base";
+        return "employees/form";
     }
     
     @PostMapping("/{id}/edit")
@@ -127,12 +127,12 @@ public class EmployeeController {
         
         if (result.hasErrors()) {
             model.addAttribute("pageTitle", "Edit Employee");
+            model.addAttribute("pageDescription", "Update employee information");
             model.addAttribute("activePage", "employees");
-            model.addAttribute("content", "employees/form :: content");
             model.addAttribute("departments", employeeService.getAllDepartments());
             model.addAttribute("positions", employeeService.getAllPositions());
             model.addAttribute("isEdit", true);
-            return "layout/base";
+            return "employees/form";
         }
         
         try {
@@ -142,12 +142,12 @@ public class EmployeeController {
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("pageTitle", "Edit Employee");
+            model.addAttribute("pageDescription", "Update employee information");
             model.addAttribute("activePage", "employees");
-            model.addAttribute("content", "employees/form :: content");
             model.addAttribute("departments", employeeService.getAllDepartments());
             model.addAttribute("positions", employeeService.getAllPositions());
             model.addAttribute("isEdit", true);
-            return "layout/base";
+            return "employees/form";
         }
     }
     
