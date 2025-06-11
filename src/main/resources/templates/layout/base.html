@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - Employee Management System">Employee Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hover-transform {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-transform:hover {
+            transform: translateY(-2px);
+        }
+
+        .sidebar-active {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-right: 4px solid #3B82F6;
+        }
+
+        .sidebar-active .sidebar-icon {
+            color: #3B82F6;
+        }
+
+        .sidebar-active .sidebar-text {
+            color: #3B82F6;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg sidebar-transition transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0" id="sidebar">
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-center h-20 shadow-md bg-gradient-to-r from-blue-600 to-blue-700">
+            <div class="flex items-center">
+                <i class="fas fa-users text-2xl text-white mr-3"></i>
+                <span class="text-xl font-bold text-white">EMS</span>
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="mt-5">
+            <div class="px-2">
+                <a th:href="@{/dashboard}" 
+                   th:classappend="${activePage == 'dashboard'} ? 'sidebar-active' : ''" 
+                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 mb-1">
+                    <i class="fas fa-tachometer-alt sidebar-icon mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+
+                <a th:href="@{/employees}" 
+                   th:classappend="${activePage == 'employees'} ? 'sidebar-active' : ''" 
+                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 mb-1">
+                    <i class="fas fa-users sidebar-icon mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"></i>
+                    <span class="sidebar-text">Employees</span>
+                </a>
+
+                <a th:href="@{/attendance}" 
+                   th:classappend="${activePage == 'attendance'} ? 'sidebar-active' : ''" 
+                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 mb-1">
+                    <i class="fas fa-calendar-check sidebar-icon mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"></i>
+                    <span class="sidebar-text">Attendance</span>
+                </a>
+
+                <a th:href="@{/performance}" 
+                   th:classappend="${activePage == 'performance'} ? 'sidebar-active' : ''" 
+                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 mb-1">
+                    <i class="fas fa-star sidebar-icon mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"></i>
+                    <span class="sidebar-text">Performance</span>
+                </a>
+
+                <a th:href="@{/reports}" 
+                   th:classappend="${activePage == 'reports'} ? 'sidebar-active' : ''" 
+                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 mb-1">
+                    <i class="fas fa-chart-bar sidebar-icon mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"></i>
+                    <span class="sidebar-text">Reports</span>
+                </a>
+
+                <!-- Admin Only Section -->
+                <div sec:authorize="hasRole('ADMIN')" class="mt-8">
+                    <div class="px-2 mb-3">
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</h3>
+                    </div>
+                    
+                    <a th:href="@{/admin/users}" 
+                       th:classappend="${activePage == 'users'} ? 'sidebar-active' : ''" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 mb-1">
+                        <i class="fas fa-user-cog sidebar-icon mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"></i>
+                        <span class="sidebar-text">User Management</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- User Info at Bottom -->
+        <div class="absolute bottom-0 w-full p-4 bg-gray-50 border-t">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="text-sm font-medium text-white" sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1)}">U</span>
+                    </div>
+                </div>
+                <div class="ml-3 flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate" sec:authentication="name">User</p>
+                    <p class="text-xs text-gray-500" sec:authentication="authorities">Role</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <form th:action="@{/logout}" method="post" class="inline">
+                        <button type="submit" class="text-gray-400 hover:text-red-500 focus:outline-none">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="lg:pl-64 flex flex-col flex-1">
+        <!-- Top Navigation -->
+        <div class="relative z-10 flex-shrink-0 flex h-16 bg-white shadow lg:hidden">
+            <button type="button" 
+                    class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+                    onclick="toggleSidebar()">
+                <span class="sr-only">Open sidebar</span>
+                <i class="fas fa-bars h-6 w-6"></i>
+            </button>
+            <div class="flex-1 px-4 flex justify-between items-center">
+                <h1 class="text-2xl font-semibold text-gray-900" th:text="${pageTitle}">Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600" sec:authentication="name">Welcome, User</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <main class="flex-1">
+            <div class="py-6">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <!-- Content Block -->
+                    <div layout:fragment="content">
+                        <!-- Page specific content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="fixed inset-0 z-40 lg:hidden hidden" id="sidebar-overlay" onclick="toggleSidebar()">
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 1024) {
+                document.getElementById('sidebar-overlay').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+            }
+        });
+    </script>
+</body>
+</html>

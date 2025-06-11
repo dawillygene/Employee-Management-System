@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Dashboard - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            <span th:text="${success}"></span>
+        </div>
+
+        <div th:if="${error}" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 mr-4">
+                        <i class="fas fa-users text-2xl text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Employees</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${totalEmployees}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 mr-4">
+                        <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Active Employees</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${activeEmployees}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                        <i class="fas fa-building text-2xl text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Departments</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${#lists.size(departments)}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 mr-4">
+                        <i class="fas fa-chart-line text-2xl text-purple-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">System Status</p>
+                        <p class="text-2xl font-bold text-green-600">Online</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <a th:href="@{/employees/add}"
+                       class="flex items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition duration-200">
+                        <div class="text-center">
+                            <i class="fas fa-user-plus text-2xl text-blue-600 mb-2"></i>
+                            <p class="text-sm font-medium text-blue-800">Add Employee</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/employees}"
+                       class="flex items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition duration-200">
+                        <div class="text-center">
+                            <i class="fas fa-users text-2xl text-green-600 mb-2"></i>
+                            <p class="text-sm font-medium text-green-800">View Employees</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/attendance}"
+                       class="flex items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition duration-200">
+                        <div class="text-center">
+                            <i class="fas fa-calendar-check text-2xl text-yellow-600 mb-2"></i>
+                            <p class="text-sm font-medium text-yellow-800">Attendance</p>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/reports}"
+                       class="flex items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition duration-200">
+                        <div class="text-center">
+                            <i class="fas fa-chart-bar text-2xl text-purple-600 mb-2"></i>
+                            <p class="text-sm font-medium text-purple-800">Reports</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Departments Overview -->
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Departments Overview</h3>
+                <div class="space-y-3">
+                    <div th:each="dept : ${departments}" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-building text-white text-sm"></i>
+                            </div>
+                            <span class="font-medium text-gray-900" th:text="${dept}">Department</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Active</span>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(departments)}" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-3xl mb-3"></i>
+                        <p>No departments found. Add employees to see departments.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Welcome to Employee Management System</h3>
+            <div class="prose text-gray-600">
+                <p>This dashboard provides an overview of your organization's employee data and key metrics. Use the sidebar navigation to:</p>
+                <ul class="mt-4 space-y-2">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        Manage employee records and information
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        Track attendance and leave requests
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        Conduct performance reviews and evaluations
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        Generate comprehensive reports
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
