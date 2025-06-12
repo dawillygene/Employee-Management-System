@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Employee Check-In - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Employee Check-In</h1>
+                <p class="text-gray-600 mt-2">Record employee arrival time for today</p>
+            </div>
+            <div class="flex space-x-3">
+                <a th:href="@{/attendance}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Attendance
+                </a>
+            </div>
+        </div>
+
+        <!-- Current Time Display -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-8 text-white mb-8 text-center">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold mb-2">Current Time</h2>
+                <div id="currentTime" class="text-4xl font-mono font-bold">--:--:--</div>
+                <div id="currentDate" class="text-lg mt-2 opacity-90">--</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Quick Check-In Form -->
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-8">
+                <div class="text-center mb-6">
+                    <div class="bg-green-100 p-4 rounded-full mx-auto w-20 h-20 flex items-center justify-center mb-4">
+                        <i class="fas fa-clock text-3xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Quick Check-In</h3>
+                    <p class="text-gray-600">Select an employee to record their check-in time</p>
+                </div>
+
+                <form th:action="@{/attendance/checkin}" method="post" class="space-y-6">
+                    <!-- CSRF Token -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div>
+                        <label for="employeeSelect" class="block text-sm font-medium text-gray-700 mb-3">
+                            <i class="fas fa-user mr-2"></i>Select Employee
+                        </label>
+                        <div class="relative">
+                            <select id="employeeSelect" name="employeeId" required class="w-full px-4 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                <option value="">Choose an employee...</option>
+                                <option th:each="employee : ${employees}" 
+                                        th:value="${employee.id}" 
+                                        th:text="${employee.fullName + ' (' + employee.employeeId + ') - ' + employee.position}">
+                                    Employee Name
+                                </option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Check-in time will be recorded as:</span>
+                            <span id="checkinTime" class="font-semibold text-gray-900">--:--</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-check mr-2"></i>
+                        Record Check-In
+                    </button>
+                </form>
+            </div>
+
+            <!-- Today's Check-ins -->
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Today's Check-ins</h3>
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                        <span id="todayCount">0</span> employees
+                    </span>
+                </div>
+
+                <div id="todayCheckins" class="space-y-4 max-h-96 overflow-y-auto">
+                    <!-- This will be populated via AJAX or server-side -->
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-clock text-3xl mb-3 opacity-50"></i>
+                        <p>No check-ins recorded yet today</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <a th:href="@{/attendance}" class="text-blue-600 hover:text-blue-800 font-medium">
+                        <i class="fas fa-list mr-2"></i>View All Attendance Records
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div class="flex items-start">
+                <div class="bg-blue-100 p-2 rounded-lg mr-3 mt-1">
+                    <i class="fas fa-info-circle text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="text-blue-900 font-semibold mb-2">Check-In Instructions</h4>
+                    <ul class="text-blue-800 text-sm space-y-1">
+                        <li>• Employees should check in when they arrive at work</li>
+                        <li>• Check-in time is automatically recorded with current timestamp</li>
+                        <li>• Late arrivals (after 9:00 AM) will be marked accordingly</li>
+                        <li>• Each employee can only check in once per day</li>
+                        <li>• Use "Mark Absent" feature for employees who don't show up</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Update current time every second
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                const dateString = now.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                document.getElementById('currentTime').textContent = timeString;
+                document.getElementById('currentDate').textContent = dateString;
+                document.getElementById('checkinTime').textContent = timeString.substring(0, 5);
+            }
+
+            // Update time immediately and then every second
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // Enhanced employee select with search
+            document.getElementById('employeeSelect').addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    // You can add additional logic here when an employee is selected
+                    console.log('Selected employee:', selectedOption.text);
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

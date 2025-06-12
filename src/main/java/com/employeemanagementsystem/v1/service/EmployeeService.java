@@ -63,11 +63,11 @@ public class EmployeeService {
     }
     
     public List<String> getAllDepartments() {
-        return employeeRepository.findAllDepartments();
+        return employeeRepository.findDistinctDepartments();
     }
     
     public List<String> getAllPositions() {
-        return employeeRepository.findAllPositions();
+        return employeeRepository.findDistinctPositions();
     }
     
     public void deleteEmployee(Long id) {
@@ -76,11 +76,15 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
     
+    public List<Employee> getAllActiveEmployees() {
+        return employeeRepository.findByStatus(Employee.EmployeeStatus.ACTIVE);
+    }
+
     public long getTotalEmployees() {
         return employeeRepository.count();
     }
-    
+
     public long getActiveEmployees() {
-        return employeeRepository.findByStatus(Employee.EmployeeStatus.ACTIVE).size();
+        return employeeRepository.countByStatus(Employee.EmployeeStatus.ACTIVE);
     }
 }

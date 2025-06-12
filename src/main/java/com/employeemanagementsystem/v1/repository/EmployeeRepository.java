@@ -21,6 +21,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByDepartment(String department);
     List<Employee> findByPosition(String position);
     List<Employee> findByStatus(Employee.EmployeeStatus status);
+    long countByStatus(Employee.EmployeeStatus status);
     
     @Query("SELECT e FROM Employee e WHERE " +
            "(:search IS NULL OR " +
@@ -33,9 +34,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                                       @Param("position") String position,
                                       Pageable pageable);
     
-    @Query("SELECT DISTINCT e.department FROM Employee e ORDER BY e.department")
-    List<String> findAllDepartments();
+    @Query("SELECT DISTINCT e.department FROM Employee e WHERE e.department IS NOT NULL ORDER BY e.department")
+    List<String> findDistinctDepartments();
     
-    @Query("SELECT DISTINCT e.position FROM Employee e ORDER BY e.position")
-    List<String> findAllPositions();
+    @Query("SELECT DISTINCT e.position FROM Employee e WHERE e.position IS NOT NULL ORDER BY e.position")
+    List<String> findDistinctPositions();
 }

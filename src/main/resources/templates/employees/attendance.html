@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Employee Attendance - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Employee Attendance</h1>
+                <p class="text-gray-600 mt-2">
+                    Attendance records for <span class="font-semibold" th:text="${employee.fullName}">Employee Name</span>
+                </p>
+            </div>
+            <div class="flex space-x-3">
+                <a th:href="@{/employees/{id}(id=${employee.id})}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Employee
+                </a>
+            </div>
+        </div>
+
+        <!-- Employee Info Summary -->
+        <div class="bg-white rounded-xl card-shadow border border-gray-100 overflow-hidden mb-8">
+            <div class="p-6">
+                <div class="flex items-center space-x-4">
+                    <div class="h-16 w-16 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                        <span th:text="${employee.fullName.substring(0,1)}">J</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900" th:text="${employee.fullName}">John Doe</h3>
+                        <p class="text-gray-600" th:text="${employee.employeeId + ' • ' + employee.department + ' • ' + employee.position}">EMP001 • IT • Developer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl card-shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 mr-4">
+                        <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Attendance Rate</p>
+                        <p class="text-2xl font-bold text-green-600" th:text="${#numbers.formatDecimal(attendancePercentage, 1, 'COMMA', 1, 'POINT')} + '%'">95.0%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl card-shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 mr-4">
+                        <i class="fas fa-calendar-check text-2xl text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Present Days</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${presentDays}">23</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl card-shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                        <i class="fas fa-calendar-alt text-2xl text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Working Days</p>
+                        <p class="text-2xl font-bold text-gray-900" th:text="${workingDays}">24</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl card-shadow border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-red-100 mr-4">
+                        <i class="fas fa-times-circle text-2xl text-red-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Absent Days</p>
+                        <p class="text-2xl font-bold text-red-600" th:text="${workingDays - presentDays}">1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Records -->
+        <div class="bg-white rounded-xl card-shadow border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-calendar-alt mr-2 text-blue-600"></i>Attendance Records
+                    </h3>
+                    <div class="text-sm text-gray-500">
+                        Showing <span th:text="${attendanceRecords.getNumberOfElements()}">10</span> of <span th:text="${attendanceRecords.getTotalElements()}">50</span> records
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hours</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="attendance : ${attendanceRecords.content}" th:class="${attendance.status.name() == 'PRESENT'} ? 'hover:bg-green-50' : (${attendance.status.name() == 'ABSENT'} ? 'hover:bg-red-50' : 'hover:bg-yellow-50')">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <span th:text="${#temporals.format(attendance.date, 'MMM dd, yyyy')}">Dec 15, 2024</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span th:if="${attendance.checkInTime}" th:text="${#temporals.format(attendance.checkInTime, 'HH:mm')}">09:00</span>
+                                <span th:unless="${attendance.checkInTime}" class="text-gray-400">—</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span th:if="${attendance.checkOutTime}" th:text="${#temporals.format(attendance.checkOutTime, 'HH:mm')}">17:30</span>
+                                <span th:unless="${attendance.checkOutTime}" class="text-gray-400">—</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span th:if="${attendance.hoursWorked}" th:text="${#numbers.formatDecimal(attendance.hoursWorked, 1, 'COMMA', 1, 'POINT')} + 'h'">8.5h</span>
+                                <span th:unless="${attendance.hoursWorked}" class="text-gray-400">—</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:class="${attendance.status.name() == 'PRESENT'} ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800' : 
+                                                (${attendance.status.name() == 'ABSENT'} ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800' : 
+                                                (${attendance.status.name() == 'LATE'} ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800' :
+                                                'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800'))" th:text="${attendance.status.name()}">PRESENT</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                <span th:if="${attendance.notes}" th:text="${attendance.notes}">—</span>
+                                <span th:unless="${attendance.notes}" class="text-gray-400">—</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(attendanceRecords.content)}">
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                <i class="fas fa-calendar-times text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-lg font-medium">No attendance records found</p>
+                                <p class="text-sm">Attendance records will appear here once they are logged.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${attendanceRecords.totalPages > 1}" class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-700">
+                        Showing page <span th:text="${attendanceRecords.number + 1}">1</span> of <span th:text="${attendanceRecords.totalPages}">5</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <a th:if="${attendanceRecords.hasPrevious()}" th:href="@{/employees/{id}/attendance(id=${employee.id}, page=${attendanceRecords.number - 1})}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                        <a th:if="${attendanceRecords.hasNext()}" th:href="@{/employees/{id}/attendance(id=${employee.id}, page=${attendanceRecords.number + 1})}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Next
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

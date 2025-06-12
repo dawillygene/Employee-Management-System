@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Performance Review Details - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+                <a th:href="@{/performance}" class="text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Performance Review Details</h1>
+                    <p class="text-gray-600 mt-2">Detailed view of employee performance evaluation</p>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <a th:href="@{/performance/edit/{id}(id=${review.id})}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-edit mr-2"></i>Edit Review
+                </a>
+                <form th:action="@{/performance/delete/{id}(id=${review.id})}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to delete this performance review?')">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-trash mr-2"></i>Delete Review
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Employee Information Card -->
+        <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6 mb-8">
+            <div class="flex items-center">
+                <!-- Employee Avatar -->
+                <div class="h-16 w-16 rounded-full flex items-center justify-center text-white font-bold text-xl mr-6" th:style="'background: linear-gradient(135deg, ' + ${review.employee.avatarColor ?: '#3B82F6'} + ' 0%, ' + ${review.employee.avatarColor ?: '#1E40AF'} + ' 100%);'">
+                    <span th:text="${#strings.substring(review.employee.fullName, 0, 1)}">A</span>
+                </div>
+
+                <!-- Employee Details -->
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-gray-900" th:text="${review.employee.fullName}">Employee Name</h2>
+                    <div class="flex items-center text-gray-600 space-x-6 mt-2">
+                        <span><i class="fas fa-id-badge mr-1"></i><span th:text="${review.employee.employeeId}">EMP001</span></span>
+                        <span><i class="fas fa-briefcase mr-1"></i><span th:text="${review.employee.position}">Position</span></span>
+                        <span><i class="fas fa-building mr-1"></i><span th:text="${review.employee.department}">Department</span></span>
+                        <span><i class="fas fa-envelope mr-1"></i><span th:text="${review.employee.email}">email@example.com</span></span>
+                    </div>
+                </div>
+
+                <!-- Overall Rating -->
+                <div class="text-center">
+                    <div class="flex items-center justify-center mb-2">
+                        <span class="text-4xl font-bold mr-3" th:text="${review.overallRating}" th:classappend="${review.overallRating >= 4.5} ? 'text-green-600' : (${review.overallRating >= 3.5} ? 'text-blue-600' : (${review.overallRating >= 2.5} ? 'text-yellow-600' : 'text-red-600'))">4.8</span>
+                        <div class="flex flex-col space-y-1">
+                            <i th:each="i : ${#numbers.sequence(1, 5)}" th:class="${i <= review.overallRating} ? 'fas fa-star text-yellow-400' : 'far fa-star text-gray-300'" class="text-lg"></i>
+                        </div>
+                    </div>
+                    <span class="px-4 py-2 text-sm font-semibold rounded-full" th:text="${review.overallRating >= 4.5} ? 'Excellent' : (${review.overallRating >= 3.5} ? 'Good' : (${review.overallRating >= 2.5} ? 'Average' : 'Needs Improvement'))" th:classappend="${review.overallRating >= 4.5} ? 'bg-green-100 text-green-800' : (${review.overallRating >= 3.5} ? 'bg-blue-100 text-blue-800' : (${review.overallRating >= 2.5} ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'))">Excellent</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Review Information</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Review Period</label>
+                        <p class="text-lg font-semibold text-gray-900" th:text="${review.reviewPeriod}">Q4 2024</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Review Date</label>
+                        <p class="text-lg font-semibold text-gray-900" th:text="${#temporals.format(review.reviewDate, 'MMMM dd, yyyy')}">December 15, 2024</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Reviewed By</label>
+                        <p class="text-lg font-semibold text-gray-900" th:text="${review.reviewedBy}">Manager Name</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Status</label>
+                        <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full" th:text="${review.status}" th:classappend="${review.status == 'COMPLETED'} ? 'bg-green-100 text-green-800' : (${review.status == 'IN_PROGRESS'} ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800')">COMPLETED</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="lg:col-span-2 bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Performance Metrics</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="bg-blue-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-code text-2xl text-blue-600 mb-2"></i>
+                            <p class="text-2xl font-bold text-blue-600" th:text="${review.technicalSkills}">5.0</p>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">Technical Skills</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="bg-green-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-comments text-2xl text-green-600 mb-2"></i>
+                            <p class="text-2xl font-bold text-green-600" th:text="${review.communication}">4.5</p>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">Communication</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="bg-purple-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-users text-2xl text-purple-600 mb-2"></i>
+                            <p class="text-2xl font-bold text-purple-600" th:text="${review.leadership}">4.8</p>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">Leadership</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="bg-yellow-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-clock text-2xl text-yellow-600 mb-2"></i>
+                            <p class="text-2xl font-bold text-yellow-600" th:text="${review.punctuality}">5.0</p>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">Punctuality</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="bg-indigo-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-handshake text-2xl text-indigo-600 mb-2"></i>
+                            <p class="text-2xl font-bold text-indigo-600" th:text="${review.teamwork}">4.3</p>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">Teamwork</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="bg-red-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-lightbulb text-2xl text-red-600 mb-2"></i>
+                            <p class="text-2xl font-bold text-red-600" th:text="${review.problemSolving}">4.7</p>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">Problem Solving</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Comments and Feedback -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Achievements -->
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6" th:if="${!#strings.isEmpty(review.achievements)}">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-trophy text-yellow-500 mr-2"></i>Achievements
+                </h3>
+                <div class="prose prose-sm max-w-none">
+                    <p class="text-gray-700 leading-relaxed" th:text="${review.achievements}">List of achievements...</p>
+                </div>
+            </div>
+
+            <!-- Areas for Improvement -->
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6" th:if="${!#strings.isEmpty(review.areasForImprovement)}">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>Areas for Improvement
+                </h3>
+                <div class="prose prose-sm max-w-none">
+                    <p class="text-gray-700 leading-relaxed" th:text="${review.areasForImprovement}">Areas that need improvement...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals and Manager Comments -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Current Goals -->
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6" th:if="${!#strings.isEmpty(review.goals)}">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-target text-green-500 mr-2"></i>Current Period Goals
+                </h3>
+                <div class="prose prose-sm max-w-none">
+                    <p class="text-gray-700 leading-relaxed" th:text="${review.goals}">Goals for this period...</p>
+                </div>
+            </div>
+
+            <!-- Goals for Next Period -->
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6" th:if="${!#strings.isEmpty(review.goalsForNextPeriod)}">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-forward text-purple-500 mr-2"></i>Goals for Next Period
+                </h3>
+                <div class="prose prose-sm max-w-none">
+                    <p class="text-gray-700 leading-relaxed" th:text="${review.goalsForNextPeriod}">Goals for next period...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Comments -->
+        <div class="mt-6">
+            <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6" th:if="${!#strings.isEmpty(review.managerComments)}">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-comment-alt text-blue-500 mr-2"></i>Manager's Comments
+                </h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-gray-700 leading-relaxed" th:text="${review.managerComments}">Manager's detailed comments...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timestamps -->
+        <div class="mt-6 bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                    <i class="fas fa-calendar-plus mr-1"></i>
+                    Created: <span th:text="${#temporals.format(review.createdAt, 'MMMM dd, yyyy HH:mm')}">December 15, 2024 10:30</span>
+                </span>
+                <span>
+                    <i class="fas fa-calendar-edit mr-1"></i>
+                    Last Updated: <span th:text="${#temporals.format(review.updatedAt, 'MMMM dd, yyyy HH:mm')}">December 15, 2024 14:45</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

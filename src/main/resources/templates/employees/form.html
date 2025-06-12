@@ -56,10 +56,8 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-user text-gray-400"></i>
                                 </div>
-                                <input type="text" id="fullName" th:field="*{fullName}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('fullName')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="Enter full name">
+                                <input type="text" id="fullName" th:field="*{fullName}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('fullName')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="Enter full name">
                             </div>
                             <div th:if="${#fields.hasErrors('fullName')}" class="mt-2 text-sm text-red-600 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
@@ -76,10 +74,8 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-id-badge text-gray-400"></i>
                                 </div>
-                                <input type="text" id="employeeId" th:field="*{employeeId}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('employeeId')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="e.g., EMP001">
+                                <input type="text" id="employeeId" th:field="*{employeeId}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('employeeId')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="e.g., EMP001">
                             </div>
                             <div th:if="${#fields.hasErrors('employeeId')}" class="mt-2 text-sm text-red-600 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
@@ -96,10 +92,8 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-envelope text-gray-400"></i>
                                 </div>
-                                <input type="email" id="email" th:field="*{email}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('email')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="employee@company.com">
+                                <input type="email" id="email" th:field="*{email}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('email')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="employee@company.com">
                             </div>
                             <div th:if="${#fields.hasErrors('email')}" class="mt-2 text-sm text-red-600 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
@@ -116,10 +110,8 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-phone text-gray-400"></i>
                                 </div>
-                                <input type="tel" id="phone" th:field="*{phone}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('phone')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="1234567890">
+                                <input type="tel" id="phone" th:field="*{phone}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('phone')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="1234567890">
                             </div>
                             <div th:if="${#fields.hasErrors('phone')}" class="mt-2 text-sm text-red-600 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
@@ -148,11 +140,8 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-building text-gray-400"></i>
                                 </div>
-                                <input type="text" id="department" th:field="*{department}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('department')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="e.g., IT, HR, Marketing"
-                                       list="departmentList">
+                                <input type="text" id="department" th:field="*{department}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('department')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="e.g., IT, HR, Marketing" list="departmentList">
                                 <datalist id="departmentList">
                                     <option th:each="dept : ${departments}" th:value="${dept}">
                                 </datalist>
@@ -172,11 +161,8 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-user-tie text-gray-400"></i>
                                 </div>
-                                <input type="text" id="position" th:field="*{position}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('position')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="e.g., Senior Developer, Manager"
-                                       list="positionList">
+                                <input type="text" id="position" th:field="*{position}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('position')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="e.g., Senior Developer, Manager" list="positionList">
                                 <datalist id="positionList">
                                     <option th:each="pos : ${positions}" th:value="${pos}">
                                 </datalist>
@@ -190,18 +176,16 @@
                         <!-- Salary -->
                         <div>
                             <label for="salary" class="block text-sm font-medium text-gray-700 mb-2">
-                                Annual Salary *
+                                Annual Salary (TSh) *
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-dollar-sign text-gray-400"></i>
+                                    <span class="text-gray-400 text-sm">TSh</span>
                                 </div>
-                                <input type="number" id="salary" th:field="*{salary}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('salary')} ? 'border-red-500 ring-2 ring-red-200' : ''"
-                                       placeholder="50000"
-                                       min="0" step="0.01">
+                                <input type="number" id="salary" th:field="*{salary}" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('salary')} ? 'border-red-500 ring-2 ring-red-200' : ''"
+                                    placeholder="1,000,000" min="0" step="1000">
                             </div>
+                            <p class="text-xs text-gray-500 mt-1">Enter annual salary in Tanzanian Shillings</p>
                             <div th:if="${#fields.hasErrors('salary')}" class="mt-2 text-sm text-red-600 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
                                 <span th:errors="*{salary}"></span>
@@ -217,9 +201,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-calendar text-gray-400"></i>
                                 </div>
-                                <input type="date" id="dateOfJoining" th:field="*{dateOfJoining}"
-                                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                       th:classappend="${#fields.hasErrors('dateOfJoining')} ? 'border-red-500 ring-2 ring-red-200' : ''">
+                                <input type="date" id="dateOfJoining" th:field="*{dateOfJoining}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" th:classappend="${#fields.hasErrors('dateOfJoining')} ? 'border-red-500 ring-2 ring-red-200' : ''">
                             </div>
                             <div th:if="${#fields.hasErrors('dateOfJoining')}" class="mt-2 text-sm text-red-600 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
@@ -236,8 +218,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-toggle-on text-gray-400"></i>
                                 </div>
-                                <select id="status" th:field="*{status}"
-                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                                <select id="status" th:field="*{status}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
                                     <option th:each="status : ${T(com.employeemanagementsystem.v1.entity.Employee.EmployeeStatus).values()}"
                                             th:value="${status}"
                                             th:text="${status}">Status</option>
@@ -261,20 +242,16 @@
                         <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
                             Address
                         </label>
-                        <textarea id="address" th:field="*{address}" rows="4"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                  placeholder="Enter full address"></textarea>
+                        <textarea id="address" th:field="*{address}" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" placeholder="Enter full address"></textarea>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
                 <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-8 border-t border-gray-200">
-                    <a th:href="@{/employees}"
-                       class="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 text-center font-medium">
+                    <a th:href="@{/employees}" class="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 text-center font-medium">
                         <i class="fas fa-times mr-2"></i>Cancel
                     </a>
-                    <button type="submit"
-                            class="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
+                    <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
                         <i class="fas fa-save mr-2"></i>
                         <span th:text="${isEdit} ? 'Update Employee' : 'Add Employee'">Save Employee</span>
                     </button>

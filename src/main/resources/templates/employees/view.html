@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Employee Details - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+
+        <!-- Header with Action Buttons -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Employee Details</h1>
+                <p class="text-gray-600 mt-2">View and manage employee information</p>
+            </div>
+            <div class="flex space-x-3">
+                <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-edit mr-2"></i>Edit Employee
+                </a>
+                <a th:href="@{/employees}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Employee Information Card -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Employee Information -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-user mr-2 text-blue-600"></i>Employee Information
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Left Column -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
+                                    <p class="text-lg font-semibold text-gray-900" th:text="${employee.employeeId}">EMP001</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <p class="text-lg font-semibold text-gray-900" th:text="${employee.fullName}">John Doe</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <p class="text-gray-900" th:text="${employee.email}">john.doe@company.com</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <p class="text-gray-900" th:text="${employee.phone}">+1234567890</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <p class="text-gray-900" th:text="${employee.address}">123 Main St, City, State</p>
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                                    <div class="flex items-center">
+                                        <div class="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center mr-2">
+                                            <i class="fas fa-building text-blue-600 text-xs"></i>
+                                        </div>
+                                        <p class="text-lg font-semibold text-gray-900" th:text="${employee.department}">IT</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                                    <p class="text-lg font-semibold text-gray-900" th:text="${employee.position}">Software Developer</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Salary</label>
+                                    <p class="text-lg font-semibold text-green-600">
+                                        TSh <span th:text="${#numbers.formatDecimal(employee.salary, 0, 'COMMA', 0, 'POINT')}">50,000</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">Annual salary</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Joining</label>
+                                    <p class="text-gray-900" th:text="${#temporals.format(employee.dateOfJoining, 'MMMM dd, yyyy')}">January 15, 2020</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    <span th:class="${employee.status == T(com.employeemanagementsystem.v1.entity.Employee.EmployeeStatus).ACTIVE} ? 
+                                                   'inline-flex items-center px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800' : 
+                                                   (${employee.status == T(com.employeemanagementsystem.v1.entity.Employee.EmployeeStatus).INACTIVE} ? 
+                                                   'inline-flex items-center px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800' :
+                                                   'inline-flex items-center px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800')" th:text="${employee.status}">ACTIVE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar with Stats and Actions -->
+            <div class="space-y-6">
+                <!-- Quick Stats Card -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-chart-bar mr-2 text-blue-600"></i>Quick Stats
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Years of Service:</span>
+                            <strong class="text-blue-600" th:text="${T(java.time.Period).between(employee.dateOfJoining, T(java.time.LocalDate).now()).getYears()} + ' years'">3 years</strong>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Employee Type:</span>
+                            <strong th:text="${employee.status.name()}">Active</strong>
+                        </div>
+                        <hr class="border-gray-200">
+                        <div class="text-center">
+                            <small class="text-gray-500">
+                                Employee since <span th:text="${#temporals.format(employee.dateOfJoining, 'MMMM yyyy')}">January 2020</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions Card -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-cogs mr-2 text-blue-600"></i>Actions
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center">
+                            <i class="fas fa-edit mr-2"></i>Edit Employee
+                        </a>
+                        <a th:href="@{/employees/{id}/attendance(id=${employee.id})}" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center">
+                            <i class="fas fa-clock mr-2"></i>View Attendance
+                        </a>
+                        <a th:href="@{/employees/{id}/performance(id=${employee.id})}" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center">
+                            <i class="fas fa-chart-line mr-2"></i>Performance Reviews
+                        </a>
+                        <hr class="border-gray-200">
+                        <button type="button" sec:authorize="hasRole('ADMIN')" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center" onclick="openDeleteModal()">
+                            <i class="fas fa-trash mr-2"></i>Delete Employee
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50" sec:authorize="hasRole('ADMIN')">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Confirm Delete</h3>
+                        <p class="text-sm text-gray-500 mb-4">Are you sure you want to delete this employee? This action cannot be undone.</p>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
+                            <p class="text-sm text-red-800">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>Warning:</strong> This will permanently remove all employee data and associated records.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="closeDeleteModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-medium transition-all duration-200">
+                            Cancel
+                        </button>
+                        <form th:action="@{/employees/{id}/delete(id=${employee.id})}" method="post" class="flex-1">
+                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200">
+                                <i class="fas fa-trash mr-2"></i>Delete Employee
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+
+</html>

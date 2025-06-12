@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Reports & Analytics</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Employee Report Card -->
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-full bg-blue-100 mr-4">
+                        <i class="fas fa-users text-2xl text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Employee Report</h3>
+                        <p class="text-sm text-gray-600">Complete employee directory</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900" th:text="${totalEmployees} + ' Records'">247 Records</span>
+                </div>
+                <div class="flex space-x-2">
+                    <a th:href="@{/reports/employee(format='pdf')}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-pdf mr-1"></i> PDF
+                    </a>
+                    <a th:href="@{/reports/employee(format='excel')}" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-excel mr-1"></i> Excel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Attendance Report Card -->
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-full bg-green-100 mr-4">
+                        <i class="fas fa-calendar-check text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Attendance Report</h3>
+                        <p class="text-sm text-gray-600">Monthly attendance logs</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900">Current Month</span>
+                </div>
+                <div class="flex space-x-2">
+                    <a th:href="@{/reports/attendance(format='pdf')}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-pdf mr-1"></i> PDF
+                    </a>
+                    <a th:href="@{/reports/attendance(format='excel')}" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-excel mr-1"></i> Excel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Salary Report Card (Admin Only) -->
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform" sec:authorize="hasRole('ADMIN')">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-full bg-purple-100 mr-4">
+                        <i class="fas fa-dollar-sign text-2xl text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Salary Report</h3>
+                        <p class="text-sm text-gray-600">Payroll and compensation</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900">Confidential</span>
+                </div>
+                <div class="flex space-x-2">
+                    <a th:href="@{/reports/salary(format='pdf')}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-pdf mr-1"></i> PDF
+                    </a>
+                    <a th:href="@{/reports/salary(format='excel')}" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-excel mr-1"></i> Excel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Performance Report Card -->
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                        <i class="fas fa-star text-2xl text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Performance Report</h3>
+                        <p class="text-sm text-gray-600">Employee evaluations</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900">All Reviews</span>
+                </div>
+                <div class="flex space-x-2">
+                    <a th:href="@{/reports/performance(format='pdf')}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-pdf mr-1"></i> PDF
+                    </a>
+                    <a th:href="@{/reports/performance(format='excel')}" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-excel mr-1"></i> Excel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Leave Report Card -->
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-full bg-red-100 mr-4">
+                        <i class="fas fa-calendar-times text-2xl text-red-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Leave Report</h3>
+                        <p class="text-sm text-gray-600">Leave requests and balances</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900">Current Month</span>
+                </div>
+                <div class="flex space-x-2">
+                    <a th:href="@{/reports/leave(format='pdf')}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-pdf mr-1"></i> PDF
+                    </a>
+                    <a th:href="@{/reports/leave(format='excel')}" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
+                        <i class="fas fa-file-excel mr-1"></i> Excel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Department Report Card -->
+            <div class="bg-white p-6 rounded-lg card-shadow hover-transform">
+                <div class="flex items-center mb-4">
+                    <div class="p-3 rounded-full bg-indigo-100 mr-4">
+                        <i class="fas fa-building text-2xl text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Department Report</h3>
+                        <p class="text-sm text-gray-600">Department-wise analytics</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900" th:text="${#lists.size(departments)} + ' Depts'">5 Depts</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="showCustomReportModal('employee')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-filter mr-1"></i> Custom
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Report Generator -->
+        <div class="bg-white rounded-lg card-shadow p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-cogs text-blue-600 mr-2"></i>Custom Report Generator
+            </h3>
+            <form id="customReportForm" th:action="@{/reports/custom}" method="post">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                        <select name="reportType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="employee">Employee List</option>
+                            <option value="attendance">Attendance Summary</option>
+                            <option value="salary" sec:authorize="hasRole('ADMIN')">Salary Report</option>
+                            <option value="performance">Performance Review</option>
+                            <option value="leave">Leave Summary</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                        <select name="department" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Departments</option>
+                            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}">IT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                        <input type="date" name="startDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input type="date" name="endDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                        <select name="position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Positions</option>
+                            <option th:each="pos : ${positions}" th:value="${pos}" th:text="${pos}">Manager</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Status</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                            <option value="TERMINATED">Terminated</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Format</label>
+                        <select name="format" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium">
+                        <i class="fas fa-file-export mr-2"></i>Generate Custom Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Report Instructions -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-4">
+                <i class="fas fa-info-circle text-blue-600 mr-2"></i>Report Generation Instructions
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-medium text-blue-800 mb-2">Quick Reports</h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Click PDF or Excel buttons for instant downloads</li>
+                        <li>• Employee reports include all active employees</li>
+                        <li>• Attendance reports default to current month</li>
+                        <li>• Salary reports are restricted to Admin users</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-blue-800 mb-2">Custom Reports</h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Use filters to narrow down data scope</li>
+                        <li>• Date ranges apply to attendance and leave reports</li>
+                        <li>• Department and position filters work across all reports</li>
+                        <li>• Reports are generated in real-time</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script layout:fragment="scripts">
+        function showCustomReportModal(reportType) {
+            // Set the report type in the form
+            document.querySelector('select[name="reportType"]').value = reportType;
+
+            // Scroll to the custom report form
+            document.getElementById('customReportForm').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('customReportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const params = new URLSearchParams();
+
+            for (let [key, value] of formData.entries()) {
+                if (value) {
+                    params.append(key, value);
+                }
+            }
+
+            // Create download link
+            const downloadUrl = this.action + '?' + params.toString();
+            window.open(downloadUrl, '_blank');
+        });
+
+        // Set default dates
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            document.querySelector('input[name="startDate"]').value = firstDay.toISOString().split('T')[0];
+            document.querySelector('input[name="endDate"]').value = today.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+
+</html>

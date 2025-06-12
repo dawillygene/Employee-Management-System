@@ -3,8 +3,9 @@ package com.employeemanagementsystem.v1.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,7 +16,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "employees")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
@@ -66,6 +68,9 @@ public class Employee {
     @Column(nullable = false)
     private EmployeeStatus status = EmployeeStatus.ACTIVE;
     
+    @Column(length = 7)
+    private String avatarColor = "#3B82F6"; // Default blue color
+    
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -85,5 +90,33 @@ public class Employee {
     
     public enum EmployeeStatus {
         ACTIVE, INACTIVE, TERMINATED
+    }
+    
+    // Custom toString method to avoid circular references
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", employeeId='" + employeeId + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", department='" + department + '\'' +
+                ", position='" + position + '\'' +
+                ", status=" + status +
+                '}';
+    }
+    
+    // Custom equals and hashCode methods
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return id != null && id.equals(employee.id);
+    }
+    
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
