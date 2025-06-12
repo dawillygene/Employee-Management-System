@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>My Leave Requests - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${success}"></span>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">My Leave Requests</h1>
+                <p class="text-gray-600 mt-2">View and manage your personal leave requests</p>
+            </div>
+            <div class="flex space-x-3">
+                <a th:href="@{/leave/new}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-plus mr-2"></i>New Leave Request
+                </a>
+                <a th:href="@{/leave}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200">
+                    <i class="fas fa-list mr-2"></i>All Requests
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Leave Balance Card -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-chart-pie text-blue-600"></i>
+                        </div>
+                        Leave Balance
+                    </h3>
+
+                    <div class="space-y-4">
+                        <!-- Vacation Balance -->
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-blue-700">Vacation Leave</span>
+                                <span class="text-lg font-bold text-blue-600" th:text="${vacationBalance != null ? vacationBalance : 25}">25</span>
+                            </div>
+                            <div class="w-full bg-blue-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" th:style="'width: ' + ${vacationBalance != null ? (vacationBalance / 25.0 * 100) : 100} + '%'"></div>
+                            </div>
+                            <div class="text-xs text-blue-600 mt-1">days remaining</div>
+                        </div>
+
+                        <!-- Sick Leave Balance -->
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-red-700">Sick Leave</span>
+                                <span class="text-lg font-bold text-red-600" th:text="${sickBalance != null ? sickBalance : 10}">10</span>
+                            </div>
+                            <div class="w-full bg-red-200 rounded-full h-2">
+                                <div class="bg-red-600 h-2 rounded-full" th:style="'width: ' + ${sickBalance != null ? (sickBalance / 10.0 * 100) : 100} + '%'"></div>
+                            </div>
+                            <div class="text-xs text-red-600 mt-1">days remaining</div>
+                        </div>
+
+                        <!-- Personal Leave Balance -->
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-purple-700">Personal Leave</span>
+                                <span class="text-lg font-bold text-purple-600" th:text="${personalBalance != null ? personalBalance : 5}">5</span>
+                            </div>
+                            <div class="w-full bg-purple-200 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" th:style="'width: ' + ${personalBalance != null ? (personalBalance / 5.0 * 100) : 100} + '%'"></div>
+                            </div>
+                            <div class="text-xs text-purple-600 mt-1">days remaining</div>
+                        </div>
+                    </div>
+
+                    <!-- Usage Summary -->
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Used this year:</span>
+                            <span class="font-semibold text-gray-900" th:text="${usedLeave != null ? usedLeave + ' days' : '0 days'}">0 days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Requests:</span>
+                            <span class="font-semibold" th:text="${myRequests != null ? #lists.size(myRequests) : 0}">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Pending:</span>
+                            <span class="font-semibold text-yellow-600" th:text="${myRequests != null ? #lists.size(myRequests.?[status.name() == 'PENDING']) : 0}">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Approved:</span>
+                            <span class="font-semibold text-green-600" th:text="${myRequests != null ? #lists.size(myRequests.?[status.name() == 'APPROVED']) : 0}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave Requests List -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl card-shadow border border-gray-100">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-calendar-times mr-2 text-blue-600"></i>My Leave Requests
+                        </h3>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        <!-- Leave Request Items -->
+                        <div th:each="request : ${myRequests}" class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-all duration-200">
+                            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-3 lg:space-y-0">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full" th:classappend="${request.leaveType.name() == 'VACATION'} ? 'bg-blue-100 text-blue-800' : (${request.leaveType.name() == 'SICK_LEAVE'} ? 'bg-red-100 text-red-800' : (${request.leaveType.name() == 'PERSONAL'} ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'))"
+                                            th:text="${#strings.replace(#strings.toLowerCase(request.leaveType.name()), '_', ' ')}">
+                                            Vacation
+                                        </span>
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full" th:classappend="${request.status.name() == 'PENDING'} ? 'bg-yellow-100 text-yellow-800' : (${request.status.name() == 'APPROVED'} ? 'bg-green-100 text-green-800' : (${request.status.name() == 'REJECTED'} ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'))"
+                                            th:text="${#strings.toLowerCase(request.status.name())}">
+                                            Pending
+                                        </span>
+                                    </div>
+
+                                    <div class="text-sm text-gray-900 mb-1">
+                                        <strong th:text="${#temporals.format(request.startDate, 'MMM dd, yyyy')}">Dec 15, 2024</strong> to
+                                        <strong th:text="${#temporals.format(request.endDate, 'MMM dd, yyyy')}">Dec 20, 2024</strong> (
+                                        <span th:text="${request.leaveDuration}">5</span> days)
+                                    </div>
+
+                                    <div class="text-sm text-gray-600" th:text="${#strings.abbreviate(request.reason, 100)}">
+                                        Reason for leave request...
+                                    </div>
+
+                                    <div th:if="${request.managerComments != null and !#strings.isEmpty(request.managerComments)}" class="mt-2 p-2 bg-gray-50 rounded text-sm">
+                                        <strong class="text-gray-700">Manager's Comment:</strong>
+                                        <span class="text-gray-600" th:text="${request.managerComments}">Manager comments</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex space-x-2">
+                                    <a th:href="@{/leave/view/{id}(id=${request.id})}" class="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-lg transition-all duration-200" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <form th:if="${request.status.name() == 'PENDING' or request.status.name() == 'APPROVED'}" th:action="@{/leave/cancel/{id}(id=${request.id})}" method="post" class="inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <button type="submit" class="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-lg transition-all duration-200" title="Cancel Request" onclick="return confirm('Are you sure you want to cancel this leave request?')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Timeline -->
+                            <div class="mt-3 text-xs text-gray-500">
+                                Applied on <span th:text="${#temporals.format(request.createdAt, 'MMM dd, yyyy HH:mm')}">Dec 10, 2024 09:30</span>
+                                <span th:if="${request.approvedAt != null}">
+                                    • Processed on <span th:text="${#temporals.format(request.approvedAt, 'MMM dd, yyyy HH:mm')}">Dec 11, 2024 14:20</span>
+                                <span th:if="${request.approvedBy != null}"> by <span th:text="${request.approvedBy}">Manager</span></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div th:if="${myRequests == null or #lists.isEmpty(myRequests)}" class="text-center py-12">
+                            <div class="bg-gray-100 rounded-full p-6 mx-auto mb-4 w-20 h-20 flex items-center justify-center">
+                                <i class="fas fa-calendar-times text-2xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">No leave requests yet</h3>
+                            <p class="text-sm text-gray-500 mb-6">You haven't submitted any leave requests. Create your first request to get started.</p>
+                            <a th:href="@{/leave/new}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200">
+                                <i class="fas fa-plus mr-2"></i>Create Leave Request
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div th:if="${totalPages > 1}" class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+                            <!-- Results Info -->
+                            <div class="text-sm text-gray-600">
+                                Showing <span class="font-medium" th:text="${currentPage * pageSize + 1}">1</span> to
+                                <span class="font-medium" th:text="${#numbers.formatInteger(T(java.lang.Math).min((currentPage + 1) * pageSize, totalElements), 0)}">10</span> of
+                                <span class="font-medium" th:text="${totalElements}">50</span> requests
+                            </div>
+
+                            <!-- Page Size Selector -->
+                            <div class="flex items-center space-x-2">
+                                <label for="pageSize" class="text-sm text-gray-600">Show:</label>
+                                <select id="pageSize" onchange="changePageSize(this.value)" class="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="3" th:selected="${pageSize == 3}">3</option>
+                                    <option value="5" th:selected="${pageSize == 5}">5</option>
+                                    <option value="10" th:selected="${pageSize == 10}">10</option>
+                                    <option value="20" th:selected="${pageSize == 20}">20</option>
+                                </select>
+                                <span class="text-sm text-gray-600">per page</span>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            <nav class="flex items-center space-x-1">
+                                <!-- First Page -->
+                                <a th:if="${currentPage > 0}" th:href="@{/leave/my-requests(page=0, size=${pageSize})}" class="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 rounded-l-md transition-colors">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+
+                                <!-- Previous Page -->
+                                <a th:if="${hasPrevious}" th:href="@{/leave/my-requests(page=${currentPage - 1}, size=${pageSize})}" class="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+
+                                <!-- Page Numbers -->
+                                <th:block th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, currentPage - 2), T(java.lang.Math).min(totalPages - 1, currentPage + 2))}">
+                                    <a th:if="${pageNum != currentPage}" th:href="@{/leave/my-requests(page=${pageNum}, size=${pageSize})}" th:text="${pageNum + 1}" class="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                                        1
+                                    </a>
+                                    <span th:if="${pageNum == currentPage}" th:text="${pageNum + 1}" class="px-3 py-1 text-sm bg-blue-600 border border-blue-600 text-white font-medium">
+                                        1
+                                    </span>
+                                </th:block>
+
+                                <!-- Next Page -->
+                                <a th:if="${hasNext}" th:href="@{/leave/my-requests(page=${currentPage + 1}, size=${pageSize})}" class="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+
+                                <!-- Last Page -->
+                                <a th:if="${currentPage < totalPages - 1}" th:href="@{/leave/my-requests(page=${totalPages - 1}, size=${pageSize})}" class="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 rounded-r-md transition-colors">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changePageSize(size) {
+            const url = new URL(window.location);
+            url.searchParams.set('size', size);
+            url.searchParams.set('page', '0'); // Reset to first page when changing page size
+            window.location.href = url.toString();
+        }
+    </script>
+</body>
+
+</html>

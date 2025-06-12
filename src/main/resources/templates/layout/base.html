@@ -102,33 +102,73 @@
 
             <!-- Sidebar Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2">
-                <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <!-- Employee Dashboard (Employee Role Only) -->
+                <a sec:authorize="hasRole('EMPLOYEE')" th:href="@{/employee-dashboard}" th:classappend="${activePage == 'employee-dashboard'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-tachometer-alt sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                    <span class="sidebar-text">My Dashboard</span>
+                </a>
+
+                <!-- Admin/HR Dashboard -->
+                <a sec:authorize="hasRole('ADMIN') or hasRole('HR')" th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-tachometer-alt sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
 
-                <a th:href="@{/employees}" th:classappend="${activePage == 'employees'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <!-- Employees (Admin/HR can manage, Employee can view limited) -->
+                <a sec:authorize="hasRole('ADMIN') or hasRole('HR')" th:href="@{/employees}" th:classappend="${activePage == 'employees'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-users sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
-                    <span class="sidebar-text">Employees</span>
+                    <span class="sidebar-text">Employee Management</span>
                 </a>
 
-                <a th:href="@{/attendance}" th:classappend="${activePage == 'attendance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                <!-- Leave Management (All roles) -->
+                <a th:href="@{/leave}" th:classappend="${activePage == 'leave'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-calendar-times sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                    <span class="sidebar-text" sec:authorize="hasRole('EMPLOYEE')">My Leave</span>
+                    <span class="sidebar-text" sec:authorize="hasRole('ADMIN') or hasRole('HR')">Leave Management</span>
+                </a>
+
+                <!-- My Leave Requests (Employee specific link) -->
+                <a sec:authorize="hasRole('EMPLOYEE')" th:href="@{/leave/my-requests}" th:classappend="${activePage == 'my-leave'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-list sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                    <span class="sidebar-text">My Requests</span>
+                </a>
+
+                <!-- Leave Calendar (All roles) -->
+                <a th:href="@{/leave/calendar}" th:classappend="${activePage == 'leave-calendar'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-calendar-alt sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                    <span class="sidebar-text">Leave Calendar</span>
+                </a>
+
+                <!-- Attendance (Admin/HR manage, Employee view own) -->
+                <a sec:authorize="hasRole('ADMIN') or hasRole('HR')" th:href="@{/attendance}" th:classappend="${activePage == 'attendance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
                     <i class="fas fa-calendar-check sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
                     <span class="sidebar-text">Attendance</span>
                 </a>
 
-                <a th:href="@{/performance}" th:classappend="${activePage == 'performance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
-                    <i class="fas fa-star sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
-                    <span class="sidebar-text">Performance</span>
+                <a sec:authorize="hasRole('EMPLOYEE')" th:href="@{/my-attendance}" th:classappend="${activePage == 'attendance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-calendar-check sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                    <span class="sidebar-text">My Attendance</span>
                 </a>
 
-                <a th:href="@{/reports}" th:classappend="${activePage == 'reports'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
-                    <i class="fas fa-chart-bar sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
-                    <span class="sidebar-text">Reports</span>
-                </a>
+                <!-- HR/Admin Only Sections -->
+                <div sec:authorize="hasRole('ADMIN') or hasRole('HR')" class="pt-4 mt-4 border-t border-gray-200">
+                    <div class="px-3 mb-3">
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Management</h3>
+                    </div>
+
+                    <a th:href="@{/performance}" th:classappend="${activePage == 'performance'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-star sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                        <span class="sidebar-text">Performance</span>
+                    </a>
+
+                    <a th:href="@{/reports}" th:classappend="${activePage == 'reports'} ? 'sidebar-active' : ''" class="sidebar-link group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-chart-bar sidebar-icon mr-3 text-lg w-5 text-gray-500 group-hover:text-blue-600"></i>
+                        <span class="sidebar-text">Reports</span>
+                    </a>
+                </div>
 
                 <!-- Admin Only Section -->
-                <div sec:authorize="hasRole('ADMIN')" class="pt-6 mt-6 border-t border-gray-200">
+                <div sec:authorize="hasRole('ADMIN')" class="pt-4 mt-4 border-t border-gray-200">
                     <div class="px-3 mb-3">
                         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</h3>
                     </div>

@@ -60,4 +60,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                                               @Param("startDate") LocalDate startDate,
                                               @Param("endDate") LocalDate endDate,
                                               @Param("status") Attendance.AttendanceStatus status);
+    
+    // Employee dashboard attendance queries
+    List<Attendance> findByEmployeeAndDateBetweenOrderByDateDesc(Employee employee, LocalDate startDate, LocalDate endDate);
+    
+    long countByEmployeeAndDateBetween(Employee employee, LocalDate startDate, LocalDate endDate);
 }

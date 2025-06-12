@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>Leave Calendar</title>
+    <style>
+        /* Custom scrollbar for day details */
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        /* Animation for panel showing */
+        
+        #leaveDetailsPanel {
+            transition: all 0.3s ease-in-out;
+        }
+        /* Hover effect for calendar days with events */
+        
+        .calendar-day-with-events:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Leave Calendar</h1>
+                    <p class="text-gray-600 mt-2">View all leave requests and holidays in calendar format</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="/leave/new" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium">
+                        <i class="fas fa-plus mr-2"></i>New Request
+                    </a>
+                    <a href="/leave" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium">
+                        <i class="fas fa-list mr-2"></i>List View
+                    </a>
+                </div>
+            </div>
+
+            <!-- Calendar Controls -->
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="previousMonth()" class="p-2 hover:bg-gray-100 rounded">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 id="currentMonth" class="text-xl font-semibold text-gray-900">December 2024</h2>
+                        <button onclick="nextMonth()" class="p-2 hover:bg-gray-100 rounded">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <select id="departmentFilter" class="px-3 py-2 border border-gray-300 rounded-md" onchange="filterCalendar()">
+                            <option value="">All Departments</option>
+                            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}">Department</option>
+                        </select>
+                        <button onclick="goToToday()" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200">
+                            Today
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex flex-wrap gap-6 mb-6">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-blue-500 rounded mr-2"></div>
+                        <span class="text-sm text-gray-600">Approved Leave</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-yellow-500 rounded mr-2"></div>
+                        <span class="text-sm text-gray-600">Pending Leave</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-red-500 rounded mr-2"></div>
+                        <span class="text-sm text-gray-600">Rejected Leave</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-500 rounded mr-2"></div>
+                        <span class="text-sm text-gray-600">Holiday</span>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="grid grid-cols-7 gap-1 bg-gray-100 p-1 rounded-lg">
+                    <!-- Day Headers -->
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Sun</div>
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Mon</div>
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Tue</div>
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Wed</div>
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Thu</div>
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Fri</div>
+                    <div class="p-3 text-center font-medium text-gray-700 bg-white rounded">Sat</div>
+
+                    <!-- Calendar Days -->
+                    <div id="calendarGrid" class="contents">
+                        <!-- Calendar days will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave Details Panel -->
+            <div id="leaveDetailsPanel" class="hidden bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Leave Details</h3>
+                    <button onclick="closeDetailsPanel()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="leaveDetailsContent">
+                    <!-- Details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+            let leaveData = [];
+
+            // Load leave data from server
+            async function loadLeaveData() {
+                try {
+                    const response = await fetch(`/leave/calendar/data?month=${currentMonth + 1}&year=${currentYear}`);
+                    leaveData = await response.json();
+                    generateCalendar();
+                } catch (error) {
+                    console.error('Error loading leave data:', error);
+                    generateCalendar(); // Generate empty calendar
+                }
+            }
+
+            // Generate calendar grid
+            function generateCalendar() {
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+
+                document.getElementById('currentMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+                const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                const calendarGrid = document.getElementById('calendarGrid');
+                calendarGrid.innerHTML = '';
+
+                // Empty cells for previous month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'p-2 h-28 bg-gray-50 rounded';
+                    calendarGrid.appendChild(emptyDay);
+                } // Days of current month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'p-2 h-28 bg-white rounded cursor-pointer hover:bg-gray-50 relative overflow-hidden transition-colors duration-150';
+
+                    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayLeaves = leaveData.filter(leave =>
+                        dateStr >= leave.startDate && dateStr <= leave.endDate
+                    );
+
+                    // Today highlighting
+                    const today = new Date();
+                    if (currentYear === today.getFullYear() &&
+                        currentMonth === today.getMonth() &&
+                        day === today.getDate()) {
+                        dayElement.classList.remove('bg-white');
+                        dayElement.classList.add('bg-blue-50', 'border-2', 'border-blue-300');
+                    }
+
+                    // Limit displayed entries to prevent overflow
+                    const maxDisplayedEntries = 2;
+                    const visibleLeaves = dayLeaves.slice(0, maxDisplayedEntries);
+                    const hiddenCount = dayLeaves.length - maxDisplayedEntries;
+
+                    let leavesHtml = visibleLeaves.map(leave => `
+                        <div class="text-xs p-1 rounded ${getLeaveColor(leave.status)} truncate cursor-pointer transition-all duration-150 hover:shadow-sm" 
+                             onclick="event.stopPropagation(); showLeaveDetails(${leave.id})" 
+                             title="${leave.employeeName} - ${leave.leaveType}">
+                            ${leave.employeeName.split(' ')[0]}
+                        </div>
+                    `).join('');
+
+                    // Add "more" indicator if there are hidden entries
+                    if (hiddenCount > 0) {
+                        leavesHtml += `
+                            <div class="text-xs p-1 bg-gray-200 text-gray-700 rounded cursor-pointer text-center font-medium transition-all duration-150 hover:bg-gray-300" 
+                                 onclick="event.stopPropagation(); showDayDetails('${dateStr}')" 
+                                 title="Click to see all ${dayLeaves.length} leave entries for this day">
+                                +${hiddenCount} more
+                            </div>
+                        `;
+                    }
+
+                    dayElement.innerHTML = `
+                        <div class="font-medium text-sm text-gray-900 mb-1">${day}</div>
+                        <div class="space-y-1 max-h-16 overflow-hidden">
+                            ${leavesHtml}
+                        </div>
+                    `;
+
+                    // Add click handler for showing day details when there are leaves
+                    if (dayLeaves.length > 0) {
+                        dayElement.addEventListener('click', (e) => {
+                            // Only trigger if not clicking on a specific leave entry
+                            if (!e.target.closest('.text-xs.p-1.rounded')) {
+                                showDayDetails(dateStr);
+                            }
+                        });
+                        // Add visual indicator that day has events
+                        dayElement.classList.add('shadow-sm', 'border', 'border-gray-200', 'calendar-day-with-events');
+                    }
+
+                    calendarGrid.appendChild(dayElement);
+                }
+            }
+
+            // Get color class based on leave status
+            function getLeaveColor(status) {
+                switch (status) {
+                    case 'APPROVED':
+                        return 'bg-blue-100 text-blue-800';
+                    case 'PENDING':
+                        return 'bg-yellow-100 text-yellow-800';
+                    case 'REJECTED':
+                        return 'bg-red-100 text-red-800';
+                    default:
+                        return 'bg-gray-100 text-gray-800';
+                }
+            }
+
+            // Navigation functions
+            function previousMonth() {
+                if (currentMonth === 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else {
+                    currentMonth--;
+                }
+                loadLeaveData();
+            }
+
+            function nextMonth() {
+                if (currentMonth === 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                } else {
+                    currentMonth++;
+                }
+                loadLeaveData();
+            }
+
+            function goToToday() {
+                const today = new Date();
+                currentMonth = today.getMonth();
+                currentYear = today.getFullYear();
+                loadLeaveData();
+            }
+
+            // Show leave details
+            async function showLeaveDetails(leaveId) {
+                try {
+                    const response = await fetch(`/leave/${leaveId}`);
+                    const leave = await response.json();
+
+                    document.getElementById('leaveDetailsContent').innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Employee</label>
+                                <p class="text-sm text-gray-900">${leave.employeeName}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Type</label>
+                                <p class="text-sm text-gray-900">${leave.leaveType.replace('_', ' ')}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                                <p class="text-sm text-gray-900">${leave.startDate}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">End Date</label>
+                                <p class="text-sm text-gray-900">${leave.endDate}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Duration</label>
+                                <p class="text-sm text-gray-900">${leave.duration} days</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Status</label>
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLeaveColor(leave.status)}">
+                                    ${leave.status}
+                                </span>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Reason</label>
+                                <p class="text-sm text-gray-900">${leave.reason}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('leaveDetailsPanel').classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error loading leave details:', error);
+                }
+            }
+
+            function closeDetailsPanel() {
+                document.getElementById('leaveDetailsPanel').classList.add('hidden');
+            }
+
+            // Show all leave details for a specific day
+            function showDayDetails(dateStr) {
+                const dayLeaves = leaveData.filter(leave =>
+                    dateStr >= leave.startDate && dateStr <= leave.endDate
+                );
+
+                if (dayLeaves.length === 0) {
+                    return;
+                }
+
+                const date = new Date(dateStr);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                let leavesHtml = '';
+                if (dayLeaves.length === 1) {
+                    // If only one leave, show full details
+                    const leave = dayLeaves[0];
+                    leavesHtml = `
+                        <div class="border rounded-lg p-4 cursor-pointer hover:bg-gray-50" onclick="showLeaveDetails(${leave.id})">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">${leave.employeeName}</h4>
+                                    <p class="text-sm text-gray-600">${leave.leaveType.replace('_', ' ')}</p>
+                                    <p class="text-sm text-gray-500">${leave.startDate} to ${leave.endDate}</p>
+                                </div>
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLeaveColor(leave.status)}">
+                                    ${leave.status}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2 truncate">${leave.reason}</p>
+                        </div>
+                    `;
+                } else {
+                    // If multiple leaves, show a compact list
+                    leavesHtml = `
+                        <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+                            ${dayLeaves.map(leave => `
+                                <div class="border rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex justify-between items-center transition-colors duration-150" 
+                                     onclick="showLeaveDetails(${leave.id})">
+                                    <div>
+                                        <p class="font-medium text-sm text-gray-900">${leave.employeeName}</p>
+                                        <p class="text-xs text-gray-600">${leave.leaveType.replace('_', ' ')}</p>
+                                    </div>
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLeaveColor(leave.status)}">
+                                        ${leave.status}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                document.getElementById('leaveDetailsContent').innerHTML = `
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold text-gray-900">Leave Requests for ${formattedDate}</h4>
+                        <p class="text-sm text-gray-600">${dayLeaves.length} ${dayLeaves.length === 1 ? 'request' : 'requests'} found</p>
+                    </div>
+                    ${leavesHtml}
+                `;
+                
+                document.getElementById('leaveDetailsPanel').classList.remove('hidden');
+            }
+
+            // Filter calendar by department
+            function filterCalendar() {
+                loadLeaveData(); // Reload with filter
+            }
+
+            // Initialize calendar on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                loadLeaveData();
+            });
+        </script>
+    </div>
+</body>
+
+</html>

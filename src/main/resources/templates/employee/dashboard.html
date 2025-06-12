@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+
+<head>
+    <title>My Dashboard - Employee Management System</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Error Message -->
+        <div th:if="${error}" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="mb-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold">Welcome back, <span th:text="${currentEmployee?.fullName ?: 'Employee'}">Employee</span>!</h1>
+                    <p class="text-blue-100 mt-2">Here's your personal dashboard overview</p>
+                    <p class="text-blue-200 text-sm mt-1" th:if="${currentEmployee}">
+                        <i class="fas fa-building mr-1"></i>
+                        <span th:text="${currentEmployee.department}">Department</span> •
+                        <span th:text="${currentEmployee.position}">Position</span>
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <i class="fas fa-user-circle text-4xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Leave Balance Card -->
+            <div class="bg-white rounded-xl p-6 card-shadow border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Vacation Balance</p>
+                        <p class="text-3xl font-bold text-green-600" th:text="${vacationBalance ?: 0}">25</p>
+                        <p class="text-xs text-gray-500 mt-1">days remaining</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-xl">
+                        <i class="fas fa-calendar-alt text-2xl text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Requests Card -->
+            <div class="bg-white rounded-xl p-6 card-shadow border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Recent Requests</p>
+                        <p class="text-3xl font-bold text-yellow-600" th:text="${recentLeaveRequests != null ? #lists.size(recentLeaveRequests) : 0}">2</p>
+                        <p class="text-xs text-gray-500 mt-1">in last 5 requests</p>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-xl">
+                        <i class="fas fa-clock text-2xl text-yellow-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Rate Card -->
+            <div class="bg-white rounded-xl p-6 card-shadow border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Attendance Rate</p>
+                        <p class="text-3xl font-bold text-blue-600"><span th:text="${#numbers.formatDecimal(attendancePercentage ?: 0, 1, 1)}">95.0</span>%</p>
+                        <p class="text-xs text-gray-500 mt-1">this month</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-xl">
+                        <i class="fas fa-check-circle text-2xl text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Leave Used Card -->
+            <div class="bg-white rounded-xl p-6 card-shadow border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Leave Used</p>
+                        <p class="text-3xl font-bold text-purple-600" th:text="${usedLeave ?: 0}">8</p>
+                        <p class="text-xs text-gray-500 mt-1">days this year</p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-xl">
+                        <i class="fas fa-calendar-times text-2xl text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Leave Management Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <a th:href="@{/leave/new}" class="group flex items-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg hover:from-green-100 hover:to-green-200 transition-all duration-200 border border-green-200">
+                            <div class="bg-green-600 p-3 rounded-lg mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <i class="fas fa-plus text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-green-800">Request Leave</p>
+                                <p class="text-sm text-green-600">Submit new leave request</p>
+                            </div>
+                        </a>
+
+                        <a th:href="@{/leave/my-requests}" class="group flex items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-200 border border-blue-200">
+                            <div class="bg-blue-600 p-3 rounded-lg mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <i class="fas fa-list text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-blue-800">My Requests</p>
+                                <p class="text-sm text-blue-600">View leave history</p>
+                            </div>
+                        </a>
+
+                        <a th:href="@{/my-attendance}" class="group flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg hover:from-purple-100 hover:to-purple-200 transition-all duration-200 border border-purple-200">
+                            <div class="bg-purple-600 p-3 rounded-lg mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <i class="fas fa-calendar-check text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-purple-800">My Attendance</p>
+                                <p class="text-sm text-purple-600">View attendance records</p>
+                            </div>
+                        </a>
+
+                        <a th:href="@{/leave/calendar}" class="group flex items-center p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg hover:from-orange-100 hover:to-orange-200 transition-all duration-200 border border-orange-200">
+                            <div class="bg-orange-600 p-3 rounded-lg mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <i class="fas fa-calendar-alt text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-orange-800">Leave Calendar</p>
+                                <p class="text-sm text-orange-600">View team calendar</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Leave Requests -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Leave Requests</h3>
+                        <a th:href="@{/leave/my-requests}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All</a>
+                    </div>
+
+                    <div th:if="${recentLeaveRequests == null or #lists.isEmpty(recentLeaveRequests)}" class="text-center py-8 text-gray-500">
+                        <div class="bg-gray-100 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-times text-2xl text-gray-400"></i>
+                        </div>
+                        <p class="text-sm">No leave requests yet</p>
+                        <p class="text-xs text-gray-400 mt-1">Submit your first leave request</p>
+                    </div>
+
+                    <div th:if="${recentLeaveRequests != null and !#lists.isEmpty(recentLeaveRequests)}" class="space-y-3">
+                        <div th:each="request : ${recentLeaveRequests}" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full mr-3" th:classappend="${request.status.name() == 'PENDING'} ? 'bg-yellow-400' : 
+                                                    (${request.status.name() == 'APPROVED'} ? 'bg-green-400' : 'bg-red-400')"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900" th:text="${#strings.toLowerCase(#strings.replace(request.leaveType.name(), '_', ' '))}">Vacation</p>
+                                    <p class="text-sm text-gray-600">
+                                        <span th:text="${#temporals.format(request.startDate, 'MMM dd')}">Dec 15</span> -
+                                        <span th:text="${#temporals.format(request.endDate, 'MMM dd')}">Dec 20</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full" th:classappend="${request.status.name() == 'PENDING'} ? 'bg-yellow-100 text-yellow-800' : 
+                                                 (${request.status.name() == 'APPROVED'} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')" th:text="${#strings.toLowerCase(request.status.name())}">Pending</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Attendance -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Attendance (Last 7 Days)</h3>
+                        <a th:href="@{/my-attendance}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All</a>
+                    </div>
+
+                    <div th:if="${recentAttendance == null or #lists.isEmpty(recentAttendance)}" class="text-center py-8 text-gray-500">
+                        <div class="bg-gray-100 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-calendar-check text-2xl text-gray-400"></i>
+                        </div>
+                        <p class="text-sm">No attendance records</p>
+                        <p class="text-xs text-gray-400 mt-1">Attendance records will appear here</p>
+                    </div>
+
+                    <div th:if="${recentAttendance != null and !#lists.isEmpty(recentAttendance)}" class="space-y-3">
+                        <div th:each="attendance : ${recentAttendance}" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full mr-3" th:classappend="${attendance.status.name() == 'PRESENT'} ? 'bg-green-400' : 
+                                                    (${attendance.status.name() == 'LATE'} ? 'bg-yellow-400' : 'bg-red-400')"></div>
+                                <div>
+                                    <p class="font-medium text-gray-900" th:text="${#temporals.format(attendance.date, 'EEEE, MMM dd')}">Monday, Dec 15</p>
+                                    <p class="text-sm text-gray-600">
+                                        <span th:if="${attendance.checkInTime != null}" th:text="'Check-in: ' + ${#temporals.format(attendance.checkInTime, 'HH:mm')}">Check-in: 09:00</span>
+                                        <span th:if="${attendance.checkOutTime != null}" th:text="' • Check-out: ' + ${#temporals.format(attendance.checkOutTime, 'HH:mm')}"> • Check-out: 17:30</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full" th:classappend="${attendance.status.name() == 'PRESENT'} ? 'bg-green-100 text-green-800' : 
+                                                 (${attendance.status.name() == 'LATE'} ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800')" th:text="${#strings.toLowerCase(attendance.status.name())}">Present</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Leave Balance Details -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Leave Balance</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">Vacation</span>
+                            </div>
+                            <span class="font-semibold text-gray-900" th:text="${vacationBalance ?: 0}">25</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-400 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">Sick Leave</span>
+                            </div>
+                            <span class="font-semibold text-gray-900" th:text="${sickBalance ?: 0}">10</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-purple-400 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">Personal</span>
+                            </div>
+                            <span class="font-semibold text-gray-900" th:text="${personalBalance ?: 0}">5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Summary -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">This Month's Attendance</h3>
+                    <div class="text-center mb-4">
+                        <div class="text-3xl font-bold text-blue-600" th:text="${presentDays ?: 0}">20</div>
+                        <div class="text-sm text-gray-600">out of <span th:text="${totalWorkingDays ?: 0}">22</span> days</div>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                        <div class="bg-blue-600 h-2 rounded-full" th:style="'width: ' + ${attendancePercentage ?: 0} + '%'"></div>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                            <i class="fas fa-percentage mr-1"></i><span th:text="${#numbers.formatDecimal(attendancePercentage ?: 0, 1, 1)}">95.0</span>% attendance
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Employee Info -->
+                <div class="bg-white rounded-xl card-shadow border border-gray-100 p-6" th:if="${currentEmployee}">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Employee Information</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-id-badge text-gray-400 mr-3 w-4"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Employee ID</p>
+                                <p class="text-sm font-medium" th:text="${currentEmployee.employeeId}">EMP001</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-building text-gray-400 mr-3 w-4"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Department</p>
+                                <p class="text-sm font-medium" th:text="${currentEmployee.department}">IT</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-briefcase text-gray-400 mr-3 w-4"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Position</p>
+                                <p class="text-sm font-medium" th:text="${currentEmployee.position}">Software Developer</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-plus text-gray-400 mr-3 w-4"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Date of Joining</p>
+                                <p class="text-sm font-medium" th:text="${#temporals.format(currentEmployee.dateOfJoining, 'MMM dd, yyyy')}">Jan 15, 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

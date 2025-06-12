@@ -33,11 +33,28 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/login", "/register").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/employees/add", "/employees/*/edit", "/employees/*/delete").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/employees", "/employees/*").hasAnyRole("ADMIN", "HR", "EMPLOYEE")
+                .requestMatchers("/leave/approve/**", "/leave/reject/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/leave/**").hasAnyRole("ADMIN", "HR", "EMPLOYEE")
+                .requestMatchers("/attendance/checkin", "/attendance/mark-absent").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/attendance/**").hasAnyRole("ADMIN", "HR", "EMPLOYEE")
+                .requestMatchers("/performance/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/reports/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers("/employee-dashboard").hasRole("EMPLOYEE")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/dashboard", true)
+                .successHandler((request, response, authentication) -> {
+                    String role = authentication.getAuthorities().iterator().next().getAuthority();
+                    if (role.equals("ROLE_EMPLOYEE")) {
+                        response.sendRedirect("/employee-dashboard");
+                    } else {
+                        response.sendRedirect("/dashboard");
+                    }
+                })
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
