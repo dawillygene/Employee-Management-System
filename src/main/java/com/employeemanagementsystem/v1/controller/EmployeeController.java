@@ -60,6 +60,7 @@ public class EmployeeController {
     }
     
     @GetMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showAddForm(Model model) {
         model.addAttribute("pageTitle", "Add Employee");
         model.addAttribute("pageDescription", "Add a new employee to the system");
@@ -72,6 +73,7 @@ public class EmployeeController {
     }
     
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public String addEmployee(@Valid @ModelAttribute Employee employee,
                              BindingResult result,
                              RedirectAttributes redirectAttributes,
@@ -113,6 +115,7 @@ public class EmployeeController {
     }
     
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('HR')")
     public String showEditForm(@PathVariable Long id, Model model) {
         Employee employee = employeeService.findById(id);
         model.addAttribute("pageTitle", "Edit Employee");
@@ -126,6 +129,7 @@ public class EmployeeController {
     }
     
     @PostMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('HR')")
     public String updateEmployee(@PathVariable Long id,
                                 @Valid @ModelAttribute Employee employee,
                                 BindingResult result,

@@ -29,7 +29,8 @@
                 <p class="text-gray-600 mt-2">View and manage employee information</p>
             </div>
             <div class="flex space-x-3">
-                <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                <!-- Only ADMIN and HR can edit employee details -->
+                <a sec:authorize="hasRole('ADMIN') or hasRole('HR')" th:href="@{/employees/{id}/edit(id=${employee.id})}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                     <i class="fas fa-edit mr-2"></i>Edit Employee
                 </a>
                 <a th:href="@{/employees}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">

@@ -28,7 +28,8 @@
                 <h1 class="text-3xl font-bold text-gray-900">Employee Management</h1>
                 <p class="text-gray-600 mt-2">Manage employee information and records</p>
             </div>
-            <a th:href="@{/employees/add}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+            <!-- Only ADMIN can add new employees -->
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/employees/add}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                 <i class="fas fa-plus mr-2"></i>Add Employee
             </a>
         </div>
@@ -142,9 +143,11 @@
                                     <a th:href="@{/employees/{id}(id=${employee.id})}" class="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-lg transition-all duration-200" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="text-green-600 hover:text-green-900 hover:bg-green-50 p-2 rounded-lg transition-all duration-200" title="Edit Employee">
+                                    <!-- Only ADMIN and HR can edit employee details -->
+                                    <a sec:authorize="hasRole('ADMIN') or hasRole('HR')" th:href="@{/employees/{id}/edit(id=${employee.id})}" class="text-green-600 hover:text-green-900 hover:bg-green-50 p-2 rounded-lg transition-all duration-200" title="Edit Employee">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    <!-- Only ADMIN can delete employees -->
                                     <form th:action="@{/employees/{id}/delete(id=${employee.id})}" method="post" class="inline" sec:authorize="hasRole('ADMIN')" onsubmit="return confirm('Are you sure you want to delete this employee?');">
                                         <button type="submit" class="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-lg transition-all duration-200" title="Delete Employee">
                                             <i class="fas fa-trash"></i>
