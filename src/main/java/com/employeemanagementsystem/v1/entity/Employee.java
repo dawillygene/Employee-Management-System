@@ -77,6 +77,10 @@ public class Employee {
     
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
     
     // Relationships
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

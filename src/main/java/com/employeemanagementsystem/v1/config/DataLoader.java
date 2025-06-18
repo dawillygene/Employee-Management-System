@@ -6,11 +6,13 @@ import com.employeemanagementsystem.v1.entity.LeaveRequest;
 import com.employeemanagementsystem.v1.service.UserService;
 import com.employeemanagementsystem.v1.service.EmployeeService;
 import com.employeemanagementsystem.v1.service.LeaveService;
+import com.employeemanagementsystem.v1.service.TriggerTestService;
 import com.employeemanagementsystem.v1.repository.LeaveRequestRepository;
 import com.employeemanagementsystem.v1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Order(2) // Run after DatabaseTriggerInitializer
 public class DataLoader implements CommandLineRunner {
     
     private final UserService userService;
@@ -30,6 +33,7 @@ public class DataLoader implements CommandLineRunner {
     private final LeaveRequestRepository leaveRequestRepository; // Direct repository access for sample data
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TriggerTestService triggerTestService;
     
     @Override
     public void run(String... args) throws Exception {
@@ -49,6 +53,9 @@ public class DataLoader implements CommandLineRunner {
             
             // Create sample leave requests
             createSampleLeaveRequests();
+            
+            // Test database triggers
+            testDatabaseTriggers();
             
             log.info("Initial data loaded successfully");
         } catch (Exception e) {
@@ -271,6 +278,20 @@ public class DataLoader implements CommandLineRunner {
             log.info("Sample employee users processed");
         } catch (Exception e) {
             log.error("Error creating sample employee users: {}", e.getMessage());
+        }
+    }
+
+    private void testDatabaseTriggers() {
+        try {
+            log.info("🧪 Testing database triggers...");
+            
+            // Test triggers and check status
+            triggerTestService.checkTriggerStatus();
+            triggerTestService.runTriggerTests();
+            
+            log.info("🧪 Trigger testing completed");
+        } catch (Exception e) {
+            log.warn("Trigger testing failed: {}", e.getMessage());
         }
     }
 }
