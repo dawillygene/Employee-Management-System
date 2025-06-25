@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/base}"
+>
+  <head>
+    <title layout:title-pattern="$CONTENT_TITLE">Admin Dashboard</title>
+  </head>
+
+  <body>
+    <div layout:fragment="content">
+      <!-- Page Header -->
+      <div class="bg-white shadow">
+        <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
+          <div
+            class="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200"
+          >
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center">
+                <div>
+                  <div class="flex items-center">
+                    <i class="fas fa-crown text-yellow-500 text-2xl mr-3"></i>
+                    <h1
+                      class="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:leading-9 sm:truncate"
+                    >
+                      Admin Dashboard
+                    </h1>
+                  </div>
+                  <dl
+                    class="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap"
+                  >
+                    <dt class="sr-only">System Status</dt>
+                    <dd
+                      class="flex items-center text-sm text-gray-500 font-medium"
+                    >
+                      <i class="fas fa-shield-alt text-green-400 mr-1"></i>
+                      System Administration Panel
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex space-x-3 md:mt-0 md:ml-4">
+              <a
+                th:href="@{/admin/users/new}"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-user-plus mr-2"></i>
+                Add User
+              </a>
+              <a
+                th:href="@{/admin/users}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-users mr-2"></i>
+                Manage Users
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Stats -->
+      <div class="mt-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <!-- Stats Grid -->
+          <div
+            class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            <!-- Total Users -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-users text-gray-400 text-2xl"></i>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">
+                        Total Users
+                      </dt>
+                      <dd
+                        class="text-lg font-medium text-gray-900"
+                        th:text="${totalUsers}"
+                      >
+                        0
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <a
+                    th:href="@{/admin/users}"
+                    class="font-medium text-indigo-700 hover:text-indigo-900"
+                    >View all users</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Employees -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-id-badge text-blue-400 text-2xl"></i>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">
+                        Total Employees
+                      </dt>
+                      <dd
+                        class="text-lg font-medium text-gray-900"
+                        th:text="${totalEmployees}"
+                      >
+                        0
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <a
+                    th:href="@{/employees}"
+                    class="font-medium text-indigo-700 hover:text-indigo-900"
+                    >View all employees</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Users -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-user-check text-green-400 text-2xl"></i>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">
+                        Active Users
+                      </dt>
+                      <dd
+                        class="text-lg font-medium text-gray-900"
+                        th:text="${activeUsers}"
+                      >
+                        0
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <span class="text-gray-500">
+                    <span th:text="${inactiveUsers}">0</span> inactive users
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- System Health -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-heartbeat text-red-400 text-2xl"></i>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">
+                        System Health
+                      </dt>
+                      <dd class="text-lg font-medium text-green-600">
+                        Excellent
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <span class="text-green-600 font-medium"
+                    >All systems operational</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role Distribution -->
+          <div class="mt-8">
+            <div class="bg-white shadow rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  <i class="fas fa-chart-pie mr-2"></i>
+                  User Role Distribution
+                </h3>
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                  <!-- Admin Count -->
+                  <div class="text-center">
+                    <div
+                      class="text-3xl font-bold text-red-600"
+                      th:text="${adminCount}"
+                    >
+                      0
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      <i class="fas fa-crown mr-1"></i>
+                      Administrators
+                    </div>
+                  </div>
+                  <!-- HR Count -->
+                  <div class="text-center">
+                    <div
+                      class="text-3xl font-bold text-blue-600"
+                      th:text="${hrCount}"
+                    >
+                      0
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      <i class="fas fa-user-tie mr-1"></i>
+                      HR Personnel
+                    </div>
+                  </div>
+                  <!-- Employee Count -->
+                  <div class="text-center">
+                    <div
+                      class="text-3xl font-bold text-green-600"
+                      th:text="${employeeCount}"
+                    >
+                      0
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      <i class="fas fa-user mr-1"></i>
+                      Employees
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Users -->
+          <div
+            class="mt-8"
+            th:if="${recentUsers != null && !recentUsers.isEmpty()}"
+          >
+            <div class="bg-white shadow rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    <i class="fas fa-history mr-2"></i>
+                    Recent Users
+                  </h3>
+                  <a
+                    th:href="@{/admin/users}"
+                    class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    View all <span aria-hidden="true">&rarr;</span>
+                  </a>
+                </div>
+                <div class="mt-4">
+                  <div
+                    class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg"
+                  >
+                    <table class="min-w-full divide-y divide-gray-300">
+                      <thead class="bg-gray-50">
+                        <tr>
+                          <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            User
+                          </th>
+                          <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Role
+                          </th>
+                          <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Status
+                          </th>
+                          <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="user : ${recentUsers}">
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                              <div class="flex-shrink-0 h-10 w-10">
+                                <div
+                                  class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+                                >
+                                  <i class="fas fa-user text-gray-600"></i>
+                                </div>
+                              </div>
+                              <div class="ml-4">
+                                <div
+                                  class="text-sm font-medium text-gray-900"
+                                  th:text="${user.username}"
+                                >
+                                  Username
+                                </div>
+                                <div
+                                  class="text-sm text-gray-500"
+                                  th:text="${user.email}"
+                                >
+                                  email@example.com
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                              class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                              th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-red-100 text-red-800' : 
+                                                                     (${user.role.name() == 'HR'} ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800')"
+                              th:text="${user.role.name()}"
+                              >Role</span
+                            >
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                              class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                              th:classappend="${user.enabled} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                              th:text="${user.enabled} ? 'Active' : 'Inactive'"
+                              >Status</span
+                            >
+                          </td>
+                          <td
+                            class="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                          >
+                            <a
+                              th:href="@{/admin/users/{id}(id=${user.id})}"
+                              class="text-indigo-600 hover:text-indigo-900 mr-3"
+                              >View</a
+                            >
+                            <a
+                              th:href="@{/admin/users/{id}/edit(id=${user.id})}"
+                              class="text-blue-600 hover:text-blue-900"
+                              >Edit</a
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="mt-8">
+            <div class="bg-white shadow rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  <i class="fas fa-bolt mr-2"></i>
+                  Quick Actions
+                </h3>
+                <div
+                  class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                >
+                  <a
+                    th:href="@{/admin/users/new}"
+                    class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                  >
+                    <div class="flex-shrink-0">
+                      <i class="fas fa-user-plus text-indigo-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="absolute inset-0" aria-hidden="true"></span>
+                      <p class="text-sm font-medium text-gray-900">
+                        Create User
+                      </p>
+                      <p class="text-sm text-gray-500 truncate">
+                        Add new system user
+                      </p>
+                    </div>
+                  </a>
+
+                  <a
+                    th:href="@{/admin/users}"
+                    class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                  >
+                    <div class="flex-shrink-0">
+                      <i class="fas fa-users-cog text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="absolute inset-0" aria-hidden="true"></span>
+                      <p class="text-sm font-medium text-gray-900">
+                        Manage Users
+                      </p>
+                      <p class="text-sm text-gray-500 truncate">
+                        Edit, disable, delete users
+                      </p>
+                    </div>
+                  </a>
+
+                  <a
+                    th:href="@{/employees}"
+                    class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                  >
+                    <div class="flex-shrink-0">
+                      <i class="fas fa-id-badge text-green-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="absolute inset-0" aria-hidden="true"></span>
+                      <p class="text-sm font-medium text-gray-900">
+                        Employee Management
+                      </p>
+                      <p class="text-sm text-gray-500 truncate">
+                        Manage employee records
+                      </p>
+                    </div>
+                  </a>
+
+                  <a
+                    th:href="@{/reports}"
+                    class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                  >
+                    <div class="flex-shrink-0">
+                      <i class="fas fa-chart-bar text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <span class="absolute inset-0" aria-hidden="true"></span>
+                      <p class="text-sm font-medium text-gray-900">
+                        System Reports
+                      </p>
+                      <p class="text-sm text-gray-500 truncate">
+                        Generate system reports
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

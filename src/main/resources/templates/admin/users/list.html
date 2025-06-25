@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/base}"
+>
+  <head>
+    <title layout:title-pattern="$CONTENT_TITLE">User Management</title>
+  </head>
+
+  <body>
+    <div layout:fragment="content">
+      <!-- Page Header -->
+      <div class="bg-white shadow">
+        <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
+          <div
+            class="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200"
+          >
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center">
+                <div>
+                  <div class="flex items-center">
+                    <i class="fas fa-users-cog text-blue-500 text-2xl mr-3"></i>
+                    <h1
+                      class="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:leading-9 sm:truncate"
+                    >
+                      User Management
+                    </h1>
+                  </div>
+                  <dl
+                    class="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap"
+                  >
+                    <dt class="sr-only">Total Users</dt>
+                    <dd
+                      class="flex items-center text-sm text-gray-500 font-medium"
+                    >
+                      <i class="fas fa-users text-gray-400 mr-1"></i>
+                      <span th:text="${totalElements}">0</span> total users
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex space-x-3 md:mt-0 md:ml-4">
+              <a
+                th:href="@{/admin/dashboard}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Dashboard
+              </a>
+              <a
+                th:href="@{/admin/users/new}"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-user-plus mr-2"></i>
+                Add New User
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Search and Filter Form -->
+        <div class="bg-white shadow rounded-lg mb-6">
+          <div class="px-4 py-5 sm:p-6">
+            <form th:action="@{/admin/users}" method="get" class="space-y-4">
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                <!-- Search -->
+                <div class="sm:col-span-2">
+                  <label
+                    for="search"
+                    class="block text-sm font-medium text-gray-700"
+                    >Search Users</label
+                  >
+                  <div class="mt-1 relative">
+                    <input
+                      type="text"
+                      name="search"
+                      id="search"
+                      th:value="${search}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Search by username or email..."
+                    />
+                    <div
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Role Filter -->
+                <div>
+                  <label
+                    for="role"
+                    class="block text-sm font-medium text-gray-700"
+                    >Role</label
+                  >
+                  <select
+                    name="role"
+                    id="role"
+                    th:value="${role}"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  >
+                    <option value="">All Roles</option>
+                    <option
+                      th:each="roleOption : ${roles}"
+                      th:value="${roleOption.name()}"
+                      th:text="${roleOption.name()}"
+                      th:selected="${roleOption.name() == role}"
+                    >
+                      Role
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div>
+                  <label
+                    for="enabled"
+                    class="block text-sm font-medium text-gray-700"
+                    >Status</label
+                  >
+                  <select
+                    name="enabled"
+                    id="enabled"
+                    th:value="${enabled}"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  >
+                    <option value="">All Status</option>
+                    <option value="true" th:selected="${enabled == true}">
+                      Active
+                    </option>
+                    <option value="false" th:selected="${enabled == false}">
+                      Inactive
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex justify-between items-center">
+                <div class="flex space-x-3">
+                  <button
+                    type="submit"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    <i class="fas fa-search mr-2"></i>
+                    Search
+                  </button>
+                  <a
+                    th:href="@{/admin/users}"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    <i class="fas fa-times mr-2"></i>
+                    Clear
+                  </a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+          <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                System Users
+                <span class="ml-2 text-sm text-gray-500"
+                  >(<span th:text="${totalElements}">0</span> users)</span
+                >
+              </h3>
+              <div class="flex items-center space-x-2">
+                <!-- Bulk Actions -->
+                <form
+                  id="bulkActionForm"
+                  th:action="@{/admin/users/bulk-action}"
+                  method="post"
+                  class="hidden"
+                >
+                  <input type="hidden" name="action" id="bulkAction" />
+                </form>
+                <button
+                  onclick="performBulkAction('enable')"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-green-700 bg-green-100 hover:bg-green-200"
+                >
+                  <i class="fas fa-user-check mr-1"></i>
+                  Enable Selected
+                </button>
+                <button
+                  onclick="performBulkAction('disable')"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-yellow-700 bg-yellow-100 hover:bg-yellow-200"
+                >
+                  <i class="fas fa-user-times mr-1"></i>
+                  Disable Selected
+                </button>
+                <button
+                  onclick="performBulkAction('delete')"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200"
+                >
+                  <i class="fas fa-trash mr-1"></i>
+                  Delete Selected
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div th:if="${users != null && !users.isEmpty()}">
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left">
+                      <input
+                        type="checkbox"
+                        id="selectAll"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        onchange="toggleAllCheckboxes()"
+                      />
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <a
+                        th:href="@{/admin/users(page=${currentPage}, size=10, sortBy='username', sortDir=${sortBy == 'username' ? reverseSortDir : 'asc'}, search=${search}, role=${role}, enabled=${enabled})}"
+                        class="group inline-flex items-center"
+                      >
+                        User
+                        <i
+                          th:if="${sortBy == 'username'}"
+                          th:class="${sortDir == 'asc'} ? 'fas fa-sort-up ml-1' : 'fas fa-sort-down ml-1'"
+                          class="text-gray-400"
+                        ></i>
+                        <i
+                          th:unless="${sortBy == 'username'}"
+                          class="fas fa-sort ml-1 text-gray-400 opacity-0 group-hover:opacity-100"
+                        ></i>
+                      </a>
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <a
+                        th:href="@{/admin/users(page=${currentPage}, size=10, sortBy='role', sortDir=${sortBy == 'role' ? reverseSortDir : 'asc'}, search=${search}, role=${role}, enabled=${enabled})}"
+                        class="group inline-flex items-center"
+                      >
+                        Role
+                        <i
+                          th:if="${sortBy == 'role'}"
+                          th:class="${sortDir == 'asc'} ? 'fas fa-sort-up ml-1' : 'fas fa-sort-down ml-1'"
+                          class="text-gray-400"
+                        ></i>
+                        <i
+                          th:unless="${sortBy == 'role'}"
+                          class="fas fa-sort ml-1 text-gray-400 opacity-0 group-hover:opacity-100"
+                        ></i>
+                      </a>
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      <a
+                        th:href="@{/admin/users(page=${currentPage}, size=10, sortBy='enabled', sortDir=${sortBy == 'enabled' ? reverseSortDir : 'asc'}, search=${search}, role=${role}, enabled=${enabled})}"
+                        class="group inline-flex items-center"
+                      >
+                        Status
+                        <i
+                          th:if="${sortBy == 'enabled'}"
+                          th:class="${sortDir == 'asc'} ? 'fas fa-sort-up ml-1' : 'fas fa-sort-down ml-1'"
+                          class="text-gray-400"
+                        ></i>
+                        <i
+                          th:unless="${sortBy == 'enabled'}"
+                          class="fas fa-sort ml-1 text-gray-400 opacity-0 group-hover:opacity-100"
+                        ></i>
+                      </a>
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr th:each="user : ${users}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        th:value="${user.id}"
+                        name="userIds"
+                        class="user-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      />
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10">
+                          <div
+                            class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+                          >
+                            <i class="fas fa-user text-gray-600"></i>
+                          </div>
+                        </div>
+                        <div class="ml-4">
+                          <div
+                            class="text-sm font-medium text-gray-900"
+                            th:text="${user.username}"
+                          >
+                            Username
+                          </div>
+                          <div
+                            class="text-sm text-gray-500"
+                            th:text="${user.email}"
+                          >
+                            email@example.com
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                        th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-red-100 text-red-800' : 
+                                                         (${user.role.name() == 'HR'} ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800')"
+                      >
+                        <i
+                          th:class="${user.role.name() == 'ADMIN'} ? 'fas fa-crown mr-1' : 
+                                                     (${user.role.name() == 'HR'} ? 'fas fa-user-tie mr-1' : 'fas fa-user mr-1')"
+                        ></i>
+                        <span th:text="${user.role.name()}">Role</span>
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                        th:classappend="${user.enabled} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                      >
+                        <i
+                          th:class="${user.enabled} ? 'fas fa-check-circle mr-1' : 'fas fa-times-circle mr-1'"
+                        ></i>
+                        <span th:text="${user.enabled} ? 'Active' : 'Inactive'"
+                          >Status</span
+                        >
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div class="flex items-center space-x-2">
+                        <a
+                          th:href="@{/admin/users/{id}(id=${user.id})}"
+                          class="text-indigo-600 hover:text-indigo-900"
+                          title="View Details"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a
+                          th:href="@{/admin/users/{id}/edit(id=${user.id})}"
+                          class="text-blue-600 hover:text-blue-900"
+                          title="Edit User"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <form
+                          th:action="@{/admin/users/{id}/toggle-status(id=${user.id})}"
+                          method="post"
+                          class="inline"
+                        >
+                          <button
+                            type="submit"
+                            th:class="${user.enabled} ? 'text-yellow-600 hover:text-yellow-900' : 'text-green-600 hover:text-green-900'"
+                            th:title="${user.enabled} ? 'Disable User' : 'Enable User'"
+                            onclick="return confirm('Are you sure you want to ' + (this.classList.contains('text-yellow-600') ? 'disable' : 'enable') + ' this user?')"
+                          >
+                            <i
+                              th:class="${user.enabled} ? 'fas fa-user-times' : 'fas fa-user-check'"
+                            ></i>
+                          </button>
+                        </form>
+                        <form
+                          th:action="@{/admin/users/{id}/delete(id=${user.id})}"
+                          method="post"
+                          class="inline"
+                        >
+                          <button
+                            type="submit"
+                            class="text-red-600 hover:text-red-900"
+                            title="Delete User"
+                            onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')"
+                          >
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div
+              th:if="${totalPages > 1}"
+              class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+            >
+              <div class="flex-1 flex justify-between sm:hidden">
+                <a
+                  th:if="${currentPage > 0}"
+                  th:href="@{/admin/users(page=${currentPage - 1}, size=10, sortBy=${sortBy}, sortDir=${sortDir}, search=${search}, role=${role}, enabled=${enabled})}"
+                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Previous
+                </a>
+                <a
+                  th:if="${currentPage < totalPages - 1}"
+                  th:href="@{/admin/users(page=${currentPage + 1}, size=10, sortBy=${sortBy}, sortDir=${sortDir}, search=${search}, role=${role}, enabled=${enabled})}"
+                  class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Next
+                </a>
+              </div>
+              <div
+                class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p class="text-sm text-gray-700">
+                    Showing
+                    <span class="font-medium" th:text="${currentPage * 10 + 1}"
+                      >1</span
+                    >
+                    to
+                    <span
+                      class="font-medium"
+                      th:text="${#numbers.formatInteger(T(java.lang.Math).min((currentPage + 1) * 10, totalElements), 0)}"
+                      >10</span
+                    >
+                    of
+                    <span class="font-medium" th:text="${totalElements}"
+                      >97</span
+                    >
+                    results
+                  </p>
+                </div>
+                <div>
+                  <nav
+                    class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                    aria-label="Pagination"
+                  >
+                    <!-- Previous Page -->
+                    <a
+                      th:if="${currentPage > 0}"
+                      th:href="@{/admin/users(page=${currentPage - 1}, size=10, sortBy=${sortBy}, sortDir=${sortDir}, search=${search}, role=${role}, enabled=${enabled})}"
+                      class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    >
+                      <i class="fas fa-chevron-left"></i>
+                    </a>
+
+                    <!-- Page Numbers -->
+                    <span
+                      th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                      th:if="${page >= currentPage - 2 && page <= currentPage + 2}"
+                    >
+                      <a
+                        th:if="${page != currentPage}"
+                        th:href="@{/admin/users(page=${page}, size=10, sortBy=${sortBy}, sortDir=${sortDir}, search=${search}, role=${role}, enabled=${enabled})}"
+                        th:text="${page + 1}"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                      </a>
+                      <span
+                        th:if="${page == currentPage}"
+                        th:text="${page + 1}"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600"
+                      >
+                      </span>
+                    </span>
+
+                    <!-- Next Page -->
+                    <a
+                      th:if="${currentPage < totalPages - 1}"
+                      th:href="@{/admin/users(page=${currentPage + 1}, size=10, sortBy=${sortBy}, sortDir=${sortDir}, search=${search}, role=${role}, enabled=${enabled})}"
+                      class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    >
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div
+            th:if="${users == null || users.isEmpty()}"
+            class="text-center py-12"
+          >
+            <i class="fas fa-users text-gray-400 text-6xl mb-4"></i>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">
+              No users found
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Get started by creating a new user.
+            </p>
+            <div class="mt-6">
+              <a
+                th:href="@{/admin/users/new}"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-user-plus mr-2"></i>
+                Add New User
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JavaScript for Bulk Actions -->
+      <script th:inline="javascript">
+        function toggleAllCheckboxes() {
+          const selectAll = document.getElementById("selectAll");
+          const checkboxes = document.querySelectorAll(".user-checkbox");
+          checkboxes.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked;
+          });
+        }
+
+        function performBulkAction(action) {
+          const checkboxes = document.querySelectorAll(
+            ".user-checkbox:checked"
+          );
+          if (checkboxes.length === 0) {
+            alert("Please select at least one user to perform this action.");
+            return;
+          }
+
+          const actionText = action === "delete" ? "delete" : action;
+          if (
+            !confirm(
+              `Are you sure you want to ${actionText} the selected users?`
+            )
+          ) {
+            return;
+          }
+
+          const form = document.getElementById("bulkActionForm");
+          document.getElementById("bulkAction").value = action;
+
+          // Add selected user IDs to form
+          checkboxes.forEach((checkbox, index) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "userIds";
+            input.value = checkbox.value;
+            form.appendChild(input);
+          });
+
+          form.submit();
+        }
+      </script>
+    </div>
+  </body>
+</html>

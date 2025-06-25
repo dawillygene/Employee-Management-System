@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/base}"
+>
+  <head>
+    <title
+      layout:title-pattern="$CONTENT_TITLE"
+      th:text="${isEdit} ? 'Edit User' : 'Create User'"
+    >
+      User Form
+    </title>
+  </head>
+
+  <body>
+    <div layout:fragment="content">
+      <!-- Page Header -->
+      <div class="bg-white shadow">
+        <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
+          <div
+            class="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200"
+          >
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center">
+                <div>
+                  <div class="flex items-center">
+                    <i
+                      th:class="${isEdit} ? 'fas fa-user-edit text-blue-500 text-2xl mr-3' : 'fas fa-user-plus text-green-500 text-2xl mr-3'"
+                    ></i>
+                    <h1
+                      class="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:leading-9 sm:truncate"
+                      th:text="${isEdit} ? 'Edit User' : 'Create New User'"
+                    >
+                      User Form
+                    </h1>
+                  </div>
+                  <dl
+                    class="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap"
+                  >
+                    <dt class="sr-only">Action</dt>
+                    <dd
+                      class="flex items-center text-sm text-gray-500 font-medium"
+                    >
+                      <i
+                        th:class="${isEdit} ? 'fas fa-edit text-blue-400 mr-1' : 'fas fa-plus text-green-400 mr-1'"
+                      ></i>
+                      <span
+                        th:text="${isEdit} ? 'Modify user information and settings' : 'Add a new user to the system'"
+                        >User Action</span
+                      >
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex space-x-3 md:mt-0 md:ml-4">
+              <a
+                th:href="@{/admin/users}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Users
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Error Messages -->
+        <div th:if="${error}" class="mb-6">
+          <div class="rounded-md bg-red-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-circle text-red-400"></i>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Error</h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <p th:text="${error}">Error message</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white shadow rounded-lg">
+          <form
+            th:action="${isEdit} ? @{/admin/users/{id}/edit(id=${user.id})} : @{/admin/users/new}"
+            th:object="${user}"
+            method="post"
+            class="space-y-6"
+          >
+            <!-- Form Header -->
+            <div class="px-4 py-5 sm:p-6 border-b border-gray-200">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                <i
+                  th:class="${isEdit} ? 'fas fa-user-edit mr-2' : 'fas fa-user-plus mr-2'"
+                ></i>
+                <span
+                  th:text="${isEdit} ? 'User Information' : 'New User Details'"
+                  >Form Title</span
+                >
+              </h3>
+              <p
+                class="mt-1 text-sm text-gray-500"
+                th:text="${isEdit} ? 'Update the user information below. Leave password field empty to keep current password.' : 'Enter the details for the new user. All fields are required.'"
+              >
+                Form description
+              </p>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="px-4 py-5 sm:p-6 space-y-6">
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <!-- Username -->
+                <div>
+                  <label
+                    for="username"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Username <span class="text-red-500">*</span>
+                  </label>
+                  <div class="mt-1 relative">
+                    <input
+                      type="text"
+                      th:field="*{username}"
+                      id="username"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Enter username"
+                      required
+                    />
+                    <div
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <i class="fas fa-user text-gray-400"></i>
+                    </div>
+                  </div>
+                  <div
+                    th:if="${#fields.hasErrors('username')}"
+                    class="mt-1 text-sm text-red-600"
+                  >
+                    <p th:errors="*{username}">Username error</p>
+                  </div>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Must be 3-50 characters long and unique
+                  </p>
+                </div>
+
+                <!-- Email -->
+                <div>
+                  <label
+                    for="email"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Email Address <span class="text-red-500">*</span>
+                  </label>
+                  <div class="mt-1 relative">
+                    <input
+                      type="email"
+                      th:field="*{email}"
+                      id="email"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Enter email address"
+                      required
+                    />
+                    <div
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <i class="fas fa-envelope text-gray-400"></i>
+                    </div>
+                  </div>
+                  <div
+                    th:if="${#fields.hasErrors('email')}"
+                    class="mt-1 text-sm text-red-600"
+                  >
+                    <p th:errors="*{email}">Email error</p>
+                  </div>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Must be a valid email address and unique
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <!-- Password -->
+                <div>
+                  <label
+                    for="password"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Password
+                    <span th:if="${!isEdit}" class="text-red-500">*</span>
+                    <span th:if="${isEdit}" class="text-gray-500"
+                      >(leave empty to keep current)</span
+                    >
+                  </label>
+                  <div class="mt-1 relative">
+                    <input
+                      type="password"
+                      th:field="*{password}"
+                      id="password"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Enter password"
+                      th:required="${!isEdit}"
+                    />
+                    <div
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <button
+                        type="button"
+                        onclick="togglePassword()"
+                        class="text-gray-400 hover:text-gray-600"
+                      >
+                        <i id="passwordIcon" class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    th:if="${#fields.hasErrors('password')}"
+                    class="mt-1 text-sm text-red-600"
+                  >
+                    <p th:errors="*{password}">Password error</p>
+                  </div>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Must be at least 6 characters long
+                  </p>
+                </div>
+
+                <!-- Role -->
+                <div>
+                  <label
+                    for="role"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    User Role <span class="text-red-500">*</span>
+                  </label>
+                  <div class="mt-1 relative">
+                    <select
+                      th:field="*{role}"
+                      id="role"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      required
+                    >
+                      <option value="">Select a role</option>
+                      <option
+                        th:each="roleOption : ${roles}"
+                        th:value="${roleOption.name()}"
+                        th:text="${roleOption.name()}"
+                        th:selected="${user.role != null && user.role.name() == roleOption.name()}"
+                      >
+                        Role
+                      </option>
+                    </select>
+                    <div
+                      class="absolute inset-y-0 right-0 pr-8 flex items-center"
+                    >
+                      <i class="fas fa-user-tag text-gray-400"></i>
+                    </div>
+                  </div>
+                  <div
+                    th:if="${#fields.hasErrors('role')}"
+                    class="mt-1 text-sm text-red-600"
+                  >
+                    <p th:errors="*{role}">Role error</p>
+                  </div>
+                  <div class="mt-1 text-xs text-gray-500">
+                    <div class="grid grid-cols-1 gap-1">
+                      <span
+                        ><strong>ADMIN:</strong> Full system access and user
+                        management</span
+                      >
+                      <span
+                        ><strong>HR:</strong> Employee management and HR
+                        operations</span
+                      >
+                      <span
+                        ><strong>EMPLOYEE:</strong> Personal profile and basic
+                        access</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Account Status -->
+              <div th:if="${isEdit}">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <input
+                      type="checkbox"
+                      th:field="*{enabled}"
+                      id="enabled"
+                      class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                    />
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for="enabled" class="font-medium text-gray-700"
+                      >Account Active</label
+                    >
+                    <p class="text-gray-500">
+                      When checked, the user can log in and access the system.
+                      Uncheck to disable the account.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hidden field for edit mode -->
+              <input th:if="${isEdit}" type="hidden" th:field="*{id}" />
+            </div>
+
+            <!-- Form Actions -->
+            <div
+              class="px-4 py-4 sm:px-6 bg-gray-50 flex justify-end space-x-3"
+            >
+              <a
+                th:href="@{/admin/users}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-times mr-2"></i>
+                Cancel
+              </a>
+              <button
+                type="submit"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i
+                  th:class="${isEdit} ? 'fas fa-save mr-2' : 'fas fa-user-plus mr-2'"
+                ></i>
+                <span th:text="${isEdit} ? 'Update User' : 'Create User'"
+                  >Submit</span
+                >
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-info-circle text-blue-400"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">
+                Important Information
+              </h3>
+              <div class="mt-2 text-sm text-blue-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <li th:if="${!isEdit}">
+                    The user will be able to log in immediately after creation
+                    if the account is active.
+                  </li>
+                  <li th:if="${isEdit}">
+                    Changes to the user role will take effect on their next
+                    login.
+                  </li>
+                  <li>
+                    Employee role users will automatically get an employee
+                    record created if one doesn't exist.
+                  </li>
+                  <li>
+                    Usernames and email addresses must be unique across the
+                    system.
+                  </li>
+                  <li th:if="${isEdit}">
+                    Leaving the password field empty will preserve the current
+                    password.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JavaScript -->
+      <script th:inline="javascript">
+        function togglePassword() {
+          const passwordField = document.getElementById("password");
+          const passwordIcon = document.getElementById("passwordIcon");
+
+          if (passwordField.type === "password") {
+            passwordField.type = "text";
+            passwordIcon.classList.remove("fa-eye");
+            passwordIcon.classList.add("fa-eye-slash");
+          } else {
+            passwordField.type = "password";
+            passwordIcon.classList.remove("fa-eye-slash");
+            passwordIcon.classList.add("fa-eye");
+          }
+        }
+
+        // Form validation
+        document.addEventListener("DOMContentLoaded", function () {
+          const form = document.querySelector("form");
+          const usernameField = document.getElementById("username");
+          const emailField = document.getElementById("email");
+          const passwordField = document.getElementById("password");
+          const roleField = document.getElementById("role");
+
+          // Real-time validation
+          usernameField.addEventListener("blur", function () {
+            validateUsername(this.value);
+          });
+
+          emailField.addEventListener("blur", function () {
+            validateEmail(this.value);
+          });
+
+          function validateUsername(username) {
+            const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+            if (username && !usernameRegex.test(username)) {
+              showFieldError(
+                usernameField,
+                "Username must be 3-50 characters and contain only letters, numbers, and underscores"
+              );
+            } else {
+              clearFieldError(usernameField);
+            }
+          }
+
+          function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+              showFieldError(emailField, "Please enter a valid email address");
+            } else {
+              clearFieldError(emailField);
+            }
+          }
+
+          function showFieldError(field, message) {
+            clearFieldError(field);
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "mt-1 text-sm text-red-600 field-error";
+            errorDiv.innerHTML = "<p>" + message + "</p>";
+            field.parentNode.appendChild(errorDiv);
+            field.classList.add("border-red-300");
+          }
+
+          function clearFieldError(field) {
+            const existingError =
+              field.parentNode.querySelector(".field-error");
+            if (existingError) {
+              existingError.remove();
+            }
+            field.classList.remove("border-red-300");
+          }
+        });
+      </script>
+    </div>
+  </body>
+</html>
